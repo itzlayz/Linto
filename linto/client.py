@@ -5,6 +5,23 @@ import os
 from . import utils, __version__
 from discord.ext import commands
 
+def gen_port() -> int:
+    import random, socket
+
+    if "DOCKER" in os.environ:
+        return 8080
+    
+    while port := random.randint(1024, 65536):
+        if socket.socket(
+            socket.AF_INET, 
+            socket.SOCK_STREAM
+        ).connect_ex(
+            ("localhost", port)
+        ):
+            break
+
+    return port
+
 async def get(*args):
     return 9999
 
@@ -28,22 +45,23 @@ async def on_ready():
         update = "Up to date" if not diff else "Update available"
 
         banner = (
-            "█░░ █ █▄░█ ▀█▀ █▀█\n"
-            "█▄▄ █ █░▀█ ░█░ █▄█\n"
+            "█   █ █▄ █ ▀█▀ █▀█\n"
+            "█▄▄ █ █ ▀█  █  █▄█\n"
         )
         
         print(
             f"{banner}\n"
             f"→ Git hash: {_hash[:7]}\n"
-            f"→ Version: {version}",
-            f"→ {update}\n"
+            f"→ Version: {version}\n",
+            f"→ {update}"
         )  
     except:
         logging.exception("Git error, look for git in path")
-
-    logger.info("Loading modules")
-
+    
     await utils.load_extensions(bot)
+
+    port = gen_port()
+    await bot.webmanager.start(port)
 
 @bot.command()
 async def reload(ctx):

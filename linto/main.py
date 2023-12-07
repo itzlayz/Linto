@@ -1,8 +1,10 @@
 import asyncio
 import os
 
-from .cord import bot
+from .web import WebManager
+from .client import bot
 from .logger import init
+
 logger = init()
 
 async def _main():
@@ -16,6 +18,9 @@ async def _main():
             os.remove("token.txt")
             await main()
 
+    web = WebManager(bot)
+    bot.webmanager = web
+    
     await bot.start(token)
 
 def main():

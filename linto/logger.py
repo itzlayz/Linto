@@ -15,6 +15,8 @@ def init():
     logger.setLevel(logging.DEBUG)
 
     logging.getLogger("asyncio").setLevel(logging.WARNING)
-    logging.getLogger("discord").setLevel(logging.WARNING)
+    logging.getLogger("aiohttp").setLevel(logging.WARNING)
+    logging.getLogger("discord").setLevel(logging.ERROR)
+    logging.getLogger("git").setLevel(logging.WARNING)
 
     return logger

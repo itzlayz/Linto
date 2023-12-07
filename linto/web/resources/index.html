@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linto manager</title>
+    <link rel="stylesheet" href="{{ static('style.css') }}">
+</head>
+<body>
+    <h1>Linto manager</h1>
+    <div class="closed_block" id="cogs">
+        <ul>
+            {% for cog in cogs %}
+            <li>
+                {{ cog[0] }}: {{ cog[1] }}
+                <button onclick="unloadModule('{{ cog[0] }}')">Unload</button>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <button onclick="toggleBlock('cogs')">Open/Close cogs</button>
+
+    <div class="closed_block" id="eval">
+        <textarea id="evalText" placeholder="Enter code for evaluation"></textarea>
+        <b id="evalResponse">Waiting for eval</b> <br>
+        <button onclick="discordEval()">Eval</button>
+    </div>
+    <button onclick="toggleBlock('eval')">Open/Close eval</button>
+    
+    <div class="closed_block" id="consuming">
+        <b id="cpu">Waiting for update</b> <br>
+        <b id="memory">Waiting for update</b> <br>
+        <button onclick="updateCount()">Update</button>
+    </div>
+    <button onclick="toggleBlock('consuming')">Open/Close consuming</button>
+
+    <script src="{{ static('script.js') }}"></script>
+</body>
+</html>
