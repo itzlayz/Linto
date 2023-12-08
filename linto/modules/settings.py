@@ -11,6 +11,7 @@ class Settings(commands.Cog):
                 self.translations["noprefix"])
         
         self.bot.command_prefix = prefix
+        self.bot.db.set("linto", "prefix", prefix)
         await ctx.reply(self.translations["chprefix"].format(prefix))
     
     @commands.command(aliases=["setlang"])

@@ -12,7 +12,8 @@ class Eval(commands.Cog):
             {
                 "self": self,
                 "bot": self.bot,
-                "ctx": ctx
+                "ctx": ctx,
+                "db": self.bot.db
             }
         )
         await ctx.reply(f"```py\n{output}\n```")

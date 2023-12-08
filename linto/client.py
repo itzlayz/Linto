@@ -35,6 +35,8 @@ bot.remove_command("help")
 @bot.event
 async def on_ready():
     bot.owner_id = bot.user.id
+    bot.command_prefix = bot.db.get("linto", "prefix", ">")
+
     try:
         import git
         repo = git.Repo()
