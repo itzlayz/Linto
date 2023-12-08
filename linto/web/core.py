@@ -1,5 +1,11 @@
+# █ ▀█▀ ▀█ █   ▄▀█ █▄█ ▀█
+# █ ░█░ █▄ █▄▄ █▀█ ░█░ █▄
+# https://t.me/itzlayz
+#                           
+# 🔒 Licensed under the GNU AGPLv3
+# https://www.gnu.org/licenses/agpl-3.0.html
+
 import re
-import os
 import jinja2
 import asyncio
 import logging
