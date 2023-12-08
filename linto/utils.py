@@ -1,18 +1,8 @@
 import os
 import ast
 import logging
-from discord.ext import commands
 
 logger = logging.getLogger()
-async def load_extensions(bot: commands.Bot, reload: bool = False):
-    for module in os.listdir("linto/modules"):
-        if module.endswith(".py"):
-            try:
-                await bot.load_extension("linto.modules." + module[:-3])
-            except commands.errors.ExtensionAlreadyLoaded:
-                if reload:
-                    await bot.unload_extension("linto.modules." + module[:-3])
-                    await bot.load_extension("linto.modules." + module[:-3])
 
 def insert_returns(body):
     if isinstance(body[-1], ast.Expr):
@@ -25,6 +15,12 @@ def insert_returns(body):
             insert_returns(body[-1].body)
 
 async def epc(code, env={}):
+    """
+    Evaluate python code
+    :param code: python code
+    :param env: code globals
+    :return: Output/Error no raise
+    """
     try:
         fn_name = "_eval_expr"
         cmd = "\n".join(f" {i}" for i in code.splitlines())

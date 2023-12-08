@@ -5,7 +5,7 @@ class Eval(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
     
-    @commands.command()
+    @commands.command(aliases=["e", "evaluate"])
     async def eval(self, ctx, *, code: str):
         output = await epc(
             code,

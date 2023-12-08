@@ -6,7 +6,7 @@ class Help(commands.Cog):
     
     @commands.command()
     async def help(self, ctx):
-        help_message = "# Bot commands:\n"
+        help_message = self.translations["cmdlist"]
 
         for cog_name, cog in self.bot.cogs.items():
             command_names = [cmd.name for cmd in cog.get_commands()]

@@ -1,6 +1,8 @@
 import asyncio
 import os
 
+from .localization import Localization
+from .database import Database
 from .web import WebManager
 from .client import bot
 from .logger import init
@@ -20,6 +22,12 @@ async def _main():
 
     web = WebManager(bot)
     bot.webmanager = web
+
+    database = Database("config.json")
+    bot.db = bot.config = database
+
+    localization = Localization(database)
+    bot.translations = bot.localization = localization
     
     await bot.start(token)
 

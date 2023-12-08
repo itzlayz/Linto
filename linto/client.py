@@ -2,7 +2,8 @@ import discord
 import logging
 import os
 
-from . import utils, __version__
+from . import __version__
+from .localization import Translations
 from discord.ext import commands
 
 def gen_port() -> int:
@@ -39,7 +40,7 @@ async def on_ready():
         repo = git.Repo()
 
         _hash = repo.head.commit.hexsha
-        diff = repo.git.rev_parse("HEAD")
+        diff = str(repo.git.rev_parse("HEAD")) == _hash
 
         version = ".".join(map(str, __version__))
         update = "Up to date" if not diff else "Update available"
@@ -58,7 +59,25 @@ async def on_ready():
     except:
         logging.exception("Git error, look for git in path")
     
-    await utils.load_extensions(bot)
+    for module in os.listdir("linto/modules"):
+        if module.endswith(".py"):
+            module = "linto.modules." + module[:-3]
+            try:
+                await bot.load_extension(module)
+            except commands.errors.ExtensionAlreadyLoaded:
+                await bot.unload_extension(module)
+                await bot.load_extension(module)
+            finally:
+                if bot.extensions and module in bot.extensions:
+                    translations = Translations(bot.db, module.split('.')[-1])
+                    setattr(
+                        getattr(
+                            bot.extensions[module],
+                            dir(bot.extensions[module])[0]
+                        ),
+                        "translations", 
+                        translations
+                    )
 
     port = gen_port()
     await bot.webmanager.start(port)
@@ -68,14 +87,26 @@ async def reload(ctx):
     text = ""
     for module in os.listdir("linto/modules"):
         if module.endswith(".py"):
+            module = "linto.modules." + module[:-3]
             try:
-                await bot.load_extension("linto.modules." + module[:-3])
-                text += f":white_check_mark: **{module[:-3]}**\n"
+                await bot.load_extension(module)
+                text += f":white_check_mark: **{module}**\n"
             except commands.errors.ExtensionAlreadyLoaded:
-                await bot.unload_extension("linto.modules." + module[:-3])
-                await bot.load_extension("linto.modules." + module[:-3])
-                text += f":white_check_mark: **{module[:-3]}**\n"
+                await bot.unload_extension(module)
+                await bot.load_extension(module)
+                text += f":white_check_mark: **{module}**\n"
             except Exception as error:
-                text += f":x: **{module[:-3]}**: `{error}`\n"
+                text += f":x: **{module}**: `{error}`\n"
+            finally:
+                if bot.extensions and module in bot.extensions:
+                    translations = Translations(bot.db, module.split('.')[-1])
+                    setattr(
+                        getattr(
+                            bot.extensions[module],
+                            dir(bot.extensions[module])[0]
+                        ),
+                        "translations", 
+                        translations
+                    )
     
     await ctx.reply(text)
