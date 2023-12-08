@@ -6,6 +6,8 @@
 # https://www.gnu.org/licenses/agpl-3.0.html
 
 from . import main
+from contextlib import suppress
 
 if __name__ == "__main__":
-    main.main()
+    with suppress(KeyboardInterrupt):
+        main.main()

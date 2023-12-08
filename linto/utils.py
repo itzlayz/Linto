@@ -7,6 +7,7 @@
 
 import os
 import ast
+import atexit
 import logging
 
 logger = logging.getLogger()
@@ -73,3 +74,11 @@ def get_cpu() -> float:
         return cpu
     except:
         return 0
+    
+def _atexit(func, *args, **kwargs):
+    """
+    Register func at exit
+    :param func: Function to do on exit
+    :return: func
+    """
+    return atexit.register(func, *args, **kwargs)

@@ -40,6 +40,20 @@ async function discordEval() {
     }
 }
 
+async function reloadLinto() {
+    try {
+        await fetch('/restart', {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        location.reload();
+    } catch (error) {
+        console.error("Error during restarting:", error);
+    }
+}
+
 function toggleBlock(id) {
     const moduleBlock = document.getElementById(id);
     const btn = document.querySelector(`button[data-id="${id}"]`);

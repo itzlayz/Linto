@@ -6,6 +6,7 @@
 # https://www.gnu.org/licenses/agpl-3.0.html
 
 import asyncio
+import warnings
 import os
 
 from .localization import Localization
@@ -39,4 +40,5 @@ async def _main():
     await bot.start(token)
 
 def main():
+    warnings.filterwarnings("ignore")
     asyncio.run(_main())

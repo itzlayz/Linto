@@ -6,6 +6,8 @@
 # https://www.gnu.org/licenses/agpl-3.0.html
 
 import re
+import os
+import sys
 import jinja2
 import asyncio
 import logging
@@ -30,8 +32,9 @@ class WebManager:
         self.app.router.add_static("/static/", "linto/web/resources/static")
 
         self.app.router.add_get("/", self.index)
-        self.app.router.add_post("/reload", self.reload)
+        self.app.router.add_post("/unload", self.unload)
         self.app.router.add_post("/consuming", self.consuming)
+        self.app.router.add_post("/restart", self.restart)
         self.app.router.add_post("/eval", self.eval)
     
     @aiohttp_jinja2.template("index.html")
@@ -39,7 +42,7 @@ class WebManager:
         cogs = [(k, v.description or "No description") for k, v in self.bot.cogs.items()]
         return {"cogs": cogs}
     
-    async def reload(self, request: web.Request):
+    async def unload(self, request: web.Request):
         data = await request.json()
 
         cog = data["cog"]
@@ -47,12 +50,20 @@ class WebManager:
         
         try:
             await self.bot.unload_extension(cog)
-            await self.bot.load_extension(cog)
         except errors.ExtensionNotLoaded:
-            await self.bot.load_extension(cog)
+            pass
         
-        logging.info(f"Reloaded {cog} module at web manager")
+        logging.info(f"Unloaded {cog} module at web manager")
         return web.Response()
+
+    async def restart(self, _):
+        def _restart():
+            os.execl(sys.executable, sys.executable, "-m", "linto")
+
+        utils._atexit(_restart)
+        logging.info("Restart invoked at web manager")
+        
+        sys.exit(0)
 
     async def eval(self, request: web.Request):
         data = await request.json()
