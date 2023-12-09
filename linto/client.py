@@ -94,18 +94,20 @@ async def on_ready():
 @bot.command()
 async def reload(ctx):
     text = ""
+    count = 0
     for module in os.listdir("linto/modules"):
         if module.endswith(".py"):
+            count += 1
             module = "linto.modules." + module[:-3]
             try:
                 await bot.load_extension(module)
-                text += f":white_check_mark: **{module}**\n"
+                text += f"`{count})` :white_check_mark: **{module}**\n"
             except commands.errors.ExtensionAlreadyLoaded:
                 await bot.unload_extension(module)
                 await bot.load_extension(module)
-                text += f":white_check_mark: **{module}**\n"
+                text += f"`{count})` :white_check_mark: **{module}**\n"
             except Exception as error:
-                text += f":x: **{module}**: `{error}`\n"
+                text += f"`{count})` :x: **{module}**: `{error}`\n"
             finally:
                 if bot.extensions and module in bot.extensions:
                     translations = Translations(bot.db, module.split('.')[-1])

@@ -17,34 +17,64 @@
 </head>
 <body>
     <h1>Linto manager</h1>
-    <div class="closed_block" id="cogs" style="display: none;">
-        <ul>
-            {% for cog in cogs %}
-            <li>
-                {{ cog[0] }}: {{ cog[1] }}
-                <button onclick="unloadModule('{{ cog[0] }}')">Unload</button>
-            </li>
-            {% endfor %}
-        </ul>
-    </div>
-    <button onclick="toggleBlock('cogs')">Open/Close cogs</button>
-
-    <div class="closed_block" id="eval" style="display: none;">
-        <textarea id="evalText" placeholder="Enter code for evaluation"></textarea>
-        <b id="evalResponse">Waiting for eval</b> <br>
-        <button onclick="discordEval()">Eval</button>
-    </div>
-    <button onclick="toggleBlock('eval')">Open/Close eval</button>
+    <div id="main" style="display: none;">
+        <div class="closed_block" id="cogs" style="display: none;">
+            <ul>
+                {% for cog in cogs %}
+                <li>
+                    {{ cog[0] }}: {{ cog[1] }}
+                    <button onclick="unloadModule('{{ cog[0] }}')">Unload</button>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <button onclick="toggleBlock('cogs')">Open/Close cogs</button>
+        <br>
     
-    <div class="closed_block" id="consuming" style="display: none;">
-        <b id="cpu">Waiting for update</b> <br>
-        <b id="memory">Waiting for update</b> <br>
+        <div class="closed_block" id="eval" style="display: none;">
+            <textarea id="evalText" placeholder="Enter code for evaluation"></textarea>
+            <b id="evalResponse">Waiting for eval</b> <br>
+            <button onclick="discordEval()">Eval</button>
+        </div>
+        <button onclick="toggleBlock('eval')">Open/Close eval</button>
+        <br>
+        
+        <div class="closed_block" id="consuming" style="display: none;">
+            <b id="cpu">Waiting for update</b> <br>
+            <b id="memory">Waiting for update</b> <br>
+    
+            <button onclick="updateCount()">Update</button>
+        </div>
+        <button onclick="toggleBlock('consuming')">Open/Close consuming</button>
+        <br>
 
-        <button onclick="updateCount()">Update</button>
+        <div class="closed_block" id="security" style="display: none;">
+            <input type="text" id="chpassword"> <br>
+            <b id="passresp"></b> <br>
+            <button onclick="changePassword()">Change password</button>
+        </div>
+        <button onclick="toggleBlock('security')">Open/Close web security</button>
+        <br>
+
+        <button onclick="reloadLinto()">Reload Linto</button>
     </div>
-    <button onclick="toggleBlock('consuming')">Open/Close consuming</button>
-    <button onclick="reloadLinto()">Reload Linto</button>
 
     <script src="{{ static('script.js') }}"></script>
+    <script>
+        fetch("/authorize", {
+            method: "POST",
+            body: JSON.stringify(
+                {"linto": localStorage.getItem("linto")}
+            )
+        }).then(response => response.status)
+        .then((response) => {
+            if (response == 401)
+            {
+                location.replace(location.href + "login")
+            } else {
+                document.getElementById("main").style.display = "block";
+            }
+        })
+    </script>
 </body>
 </html>

@@ -13,13 +13,15 @@ import asyncio
 import logging
 import aiohttp_jinja2
 
-from aiohttp import web
 from .. import utils
+
+from aiohttp import web
 from discord.ext.commands import Bot, errors
 
 class WebManager:
     def __init__(self, bot: Bot) -> None:
         self.app = web.Application()
+        self.password = None
         self._url = None
         self.bot = bot
         
@@ -32,7 +34,11 @@ class WebManager:
         self.app.router.add_static("/static/", "linto/web/resources/static")
 
         self.app.router.add_get("/", self.index)
+        self.app.router.add_get("/login", self.login)
+        
         self.app.router.add_post("/unload", self.unload)
+        self.app.router.add_post("/chpass", self.changePassword)
+        self.app.router.add_post("/authorize", self.authorize)
         self.app.router.add_post("/consuming", self.consuming)
         self.app.router.add_post("/restart", self.restart)
         self.app.router.add_post("/eval", self.eval)
@@ -41,8 +47,50 @@ class WebManager:
     async def index(self, _):
         cogs = [(k, v.description or "No description") for k, v in self.bot.cogs.items()]
         return {"cogs": cogs}
+
+    @aiohttp_jinja2.template("login.html")
+    async def login(self, _):
+        return {}
+
+    async def checkAuth(self, request: web.Request):
+        data = await request.json()
+        password = str(data.get("linto", "")).strip()
+        if not password or password != self.password:
+            return False
+        
+        return True
+
+    async def changePassword(self, request: web.Request):
+        data = await request.json()
+        password = data["password"]
+        curpass = data.get("curpassword", "")
+
+        if not curpass or curpass != self.password:
+            return web.Response(status=401)
+
+        self.password = password
+        self.bot.db.set("linto_web", "password", password)
+
+        return web.Response()
+
+    async def authorize(self, request: web.Request):
+        if not self.password:
+            self.password = self.bot.db.get(
+                "linto_web", "password", "linto123")
+
+        data = await request.json()
+        password = str(data["linto"]).strip()
+        if password != self.password:
+            password = request.cookies.get("linto", "")
+            if not password or password != self.password:
+                return web.Response(status=401)
+        
+        return web.Response()
     
     async def unload(self, request: web.Request):
+        if not self.checkAuth(request):
+            return web.Response(status=401)
+        
         data = await request.json()
 
         cog = data["cog"]
@@ -57,6 +105,9 @@ class WebManager:
         return web.Response()
 
     async def restart(self, _):
+        if not self.checkAuth(_):
+            return web.Response(status=401)
+        
         def _restart():
             os.execl(sys.executable, sys.executable, "-m", "linto")
 
@@ -66,6 +117,9 @@ class WebManager:
         sys.exit(0)
 
     async def eval(self, request: web.Request):
+        if not self.checkAuth(request):
+            return web.Response(status=401)
+        
         data = await request.json()
         code = data["code"]
         output = await utils.epc(code, {"bot": self.bot})
@@ -80,6 +134,11 @@ class WebManager:
 
     async def start(self, port: int):
         logging.info("Starting web manager")
+        self.password = self.bot.db.get(
+            "linto_web", "password", None) or utils.rand()
+        
+        self.bot.db.set(
+            "linto_web", "password", self.password)
 
         self.app_runner = web.AppRunner(self.app)
         await self.app_runner.setup()

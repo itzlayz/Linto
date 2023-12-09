@@ -14,23 +14,23 @@ async function unloadModule(cog) {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ cog }),
+            body: JSON.stringify({ "cog": cog, "linto": localStorage.getItem("linto") }),
         });
     } catch (error) {
         console.error('Error during module unloading:', error);
     }
 }
 
-async function discordEval() {
+async function discordEval() {    
     try {
         const code = document.getElementById("evalText").value;
         const evalResponse = document.getElementById("evalResponse");
         const response = await fetch('/eval', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ code }),
+            body: JSON.stringify({ "code": code, "linto": localStorage.getItem("linto") }),
         });
         
         let evalresp = await response.text();
@@ -46,13 +46,41 @@ async function reloadLinto() {
             method: "POST",
             headers: {
                 'Content-Type': 'application/json',
-            }
+            },
+            body: JSON.stringify(
+                {"linto": localStorage.getItem("linto")}
+            )
         });
         location.reload();
     } catch (error) {
         console.error("Error during restarting:", error);
     }
 }
+
+async function changePassword() {
+    const password = document.getElementById("chpassword").value;
+    const resp = document.getElementById("passresp");
+    if (password.length < 5) {
+        resp.innerText = "The password must be at least 5 characters long";
+        return
+    }
+
+    try {
+        await fetch('/chpass', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(
+                {"password": password, "curpassword": localStorage.getItem("linto")}
+            )
+        });
+        location.replace(location.href + "login")
+    } catch (error) {
+        console.error('Error during changing password:', error);
+    }
+}
+
 
 function toggleBlock(id) {
     const moduleBlock = document.getElementById(id);
@@ -78,7 +106,7 @@ async function updateCount() {
         let memory = document.getElementById("memory");
 
         cpu.innerText = `💽 CPU: ±${data.cpu}%`;
-        memory.innerText = `🧠 RAM: ±${data.memory}%`;
+        memory.innerText = `🧠 RAM: ±${data.memory}MB`;
     } catch (error) {
         console.error('Error during updating consuming:', error);
     }

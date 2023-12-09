@@ -51,3 +51,10 @@ textarea {
 b {
     color: #61dafb;
 }
+
+input {
+    border-radius: 50px;
+    width: auto;
+    height: 30px;
+    font-family: Verdana;
+}

@@ -7,10 +7,14 @@
 
 import os
 import ast
+import string
+import random
 import atexit
 import logging
 
 logger = logging.getLogger()
+LETTERS = string.ascii_uppercase + string.ascii_lowercase + "".join(
+    str(i) for i in range(1, 10))
 
 def insert_returns(body):
     if isinstance(body[-1], ast.Expr):
@@ -82,3 +86,15 @@ def _atexit(func, *args, **kwargs):
     :return: func
     """
     return atexit.register(func, *args, **kwargs)
+
+
+def rand(length: int = 10) -> str:
+    """
+    Generate random string
+    :param length: String length
+    :return: Random string
+    """
+    return "".join(
+        random.choice(
+            LETTERS) for _ in range(length)
+    )

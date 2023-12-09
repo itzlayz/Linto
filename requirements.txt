@@ -1,4 +1,5 @@
 discord.py-self==2.0.0
+pynacl
 psutil
 pyyaml
 lightdb
