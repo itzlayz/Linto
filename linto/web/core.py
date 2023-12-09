@@ -74,10 +74,6 @@ class WebManager:
         return web.Response()
 
     async def authorize(self, request: web.Request):
-        if not self.password:
-            self.password = self.bot.db.get(
-                "linto_web", "password", "linto123")
-
         data = await request.json()
         password = str(data["linto"]).strip()
         if password != self.password:
