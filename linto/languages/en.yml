@@ -11,3 +11,7 @@ settings:
   chprefix: "✔ **You successfully changed prefix to** `{}`"
   nolanguage: "❌ **Wrong language**"
   chlanguage: "✔ **You successfully changed language to** `{}`"
+  noreply: "❌ **No reply or no file**"
+  loadedmod: "✔ **Loaded** `{}` **module**"
+  alreadyloaded: "❌ **Module already loaded**"
+  error: "❌ **Command error**, `{}`\n```py\n{}\n```"
