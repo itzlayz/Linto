@@ -6,7 +6,9 @@
 # 🔒 Licensed under the GNU AGPLv3
 # https://www.gnu.org/licenses/agpl-3.0.html 
 
+import io
 
+from discord import File
 from discord.ext import commands
 from ..utils import epc
 
@@ -25,7 +27,14 @@ class Eval(commands.Cog):
                 "db": self.bot.db
             }
         )
-        await ctx.reply(f"```py\n{output}\n```")
+        
+        try:
+            await ctx.reply(f"```py\n{output}\n```")
+        except:  # noqa: E722
+            file = io.BytesIO(ctx.message.content.encode())
+            file.name = "output.txt"
+
+            await ctx.reply(file=File(file, filename=file.name))
 
 async def setup(bot):
     await bot.add_cog(Eval(bot))

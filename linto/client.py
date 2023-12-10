@@ -14,7 +14,7 @@ from .localization import Translations
 from discord.ext import commands
 
 def gen_port() -> int:
-    import random, socket
+    import random, socket  # noqa: E401
 
     if "DOCKER" in os.environ:
         return 8080
@@ -65,7 +65,7 @@ async def on_ready():
             f"→ Version: {version}\n",
             f"→ {update}"
         )  
-    except:
+    except:  # noqa: E722
         logging.exception("Git error, look for git in path")
     
     for module in os.listdir("linto/modules"):

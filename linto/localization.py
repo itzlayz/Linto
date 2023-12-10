@@ -7,6 +7,7 @@
 
 import os
 from typing import Any
+
 import yaml
 from .database import Database
 

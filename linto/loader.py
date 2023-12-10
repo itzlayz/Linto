@@ -1,6 +1,4 @@
 import typing
-import inspect
-import importlib
 
 from importlib.abc import SourceLoader
 from importlib.machinery import ModuleSpec

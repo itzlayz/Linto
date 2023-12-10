@@ -7,6 +7,7 @@
 
 import os
 import ast
+import asyncio
 import string
 import random
 import atexit
@@ -58,7 +59,7 @@ def get_ram() -> float:
         for child in process.children(recursive=True):
             mem += child.memory_info()[0] / 2.0**20
         return round(mem, 1)
-    except:
+    except:  # noqa: E722
         return 0
 
 def get_cpu() -> float:
@@ -76,7 +77,7 @@ def get_cpu() -> float:
             cpu += child.cpu_percent()
 
         return cpu
-    except:
+    except:  # noqa: E722
         return 0
     
 def _atexit(func, *args, **kwargs):
@@ -98,3 +99,13 @@ def rand(length: int = 10) -> str:
         random.choice(
             LETTERS) for _ in range(length)
     )
+
+async def check_output(command: str) -> asyncio.subprocess.Process:
+    proc = await asyncio.create_subprocess_exec(
+        command, 
+        stdin=asyncio.subprocess.STDOUT,
+        stderr=asyncio.subprocess.STDOUT,
+        stdout=asyncio.subprocess.STDOUT
+    )
+
+    return proc.stdout

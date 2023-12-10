@@ -21,7 +21,11 @@ class Settings(commands.Cog):
         if hasattr(ctx.command, 'on_error'):
             return
         
-        await ctx.reply(self.translations["error"].format(ctx.message.content, error))
+        await ctx.reply(
+            self.translations["error"].format(
+                ctx.message.content, error
+            )
+        )
     
     @commands.command()
     async def setprefix(self, ctx, prefix: str):
