@@ -1,4 +1,6 @@
 discord.py-self==2.0.0
+aiohttp_jinja2
+jinja2
 pynacl
 psutil
 pyyaml
