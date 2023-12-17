@@ -27,8 +27,10 @@ class Eval(commands.Cog):
                 "db": self.bot.db
             }
         )
-        
-        await ctx.reply(f"```py\n{output}\n```")
-        
+        if len(output) <= 2000:
+            output = f"```py\n{output}\n```"
+
+        await ctx.reply(output)
+
 async def setup(bot):
     await bot.add_cog(Eval(bot))
