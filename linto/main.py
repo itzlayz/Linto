@@ -14,19 +14,31 @@ from .database import Database
 from .web import WebManager
 from .client import bot
 from .logger import init
+from .auth import Auth
 
 logger = init()
 
 async def _main():
     if "token.txt" not in os.listdir():
-        token = input("Enter discord token: ")
+        prompt = input("Enter a token or continue to authorize manually: ")
+        if not prompt.strip():
+            auth = Auth()
+            await auth.authorize()
+
+            with open("token.txt", "w") as file:
+                file.write(auth.token)
+
+            del auth
+            await _main()
     else:
         with open("token.txt", "r") as file:
             token = file.read()
-
-        if not token:
+        
+        try:
+            await bot.login(token)
+        except:
             os.remove("token.txt")
-            await main()
+            await _main()
 
     web = WebManager(bot)
     bot.webmanager = web
@@ -37,7 +49,7 @@ async def _main():
     localization = Localization(database)
     bot.translations = bot.localization = localization
     
-    await bot.start(token)
+    await bot.connect()
 
 def main():
     warnings.filterwarnings("ignore")

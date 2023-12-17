@@ -9,7 +9,7 @@ import discord
 import logging
 import os
 
-from . import __version__
+from . import __version__, patch
 from .localization import Translations
 from discord.ext import commands
 
@@ -36,7 +36,7 @@ async def get(*args):
 discord.utils._get_build_number = get
 logger = logging.getLogger()
 
-bot = commands.Bot(command_prefix='>', self_bot=True)
+bot = patch.Bot(command_prefix='>', self_bot=True)
 bot.remove_command("help")
 
 @bot.event
