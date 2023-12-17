@@ -28,13 +28,7 @@ class Eval(commands.Cog):
             }
         )
         
-        try:
-            await ctx.reply(f"```py\n{output}\n```")
-        except:  # noqa: E722
-            file = io.BytesIO(ctx.message.content.encode())
-            file.name = "output.txt"
-
-            await ctx.reply(file=File(file, filename=file.name))
-
+        await ctx.reply(f"```py\n{output}\n```")
+        
 async def setup(bot):
     await bot.add_cog(Eval(bot))
