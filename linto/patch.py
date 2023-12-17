@@ -51,5 +51,8 @@ async def reply(
 
     if file:
         return await self.message.reply(file=File(fp=file, filename=file.name))
+    
+    if not kwargs["files"] and kwargs.get("file", None):
+        kwargs.pop("files", None)
 
     return await self.message.reply(**kwargs)
