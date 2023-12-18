@@ -23,6 +23,9 @@ class Settings(commands.Cog):
         if hasattr(ctx.command, 'on_error'):
             return
         
+        if isinstance(error, commands.errors.CommandNotFound):
+            return
+        
         await ctx.reply(
             self.translations["error"].format(
                 ctx.message.content, error
