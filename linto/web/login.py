@@ -5,14 +5,12 @@
 # 🔒 Licensed under the GNU AGPLv3
 # https://www.gnu.org/licenses/agpl-3.0.html
 
-__version__ = (0, 0, 1)
+# import jinja2
+# import asyncio
+# import logging
+# import aiohttp_jinja2
 
-import os
-import git
+# from aiohttp import web
+# from discord.ext.commands import Bot
 
-try:
-    branch = git.Repo(
-        path=os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-    ).active_branch.name
-except Exception:
-    branch = "master"
+"""Login page in future"""

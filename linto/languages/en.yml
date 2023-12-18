@@ -1,17 +1,20 @@
 help:
-  cmdlist: "# 🤖 Bot commands:\n"
+  cmdlist: "Bot commands:\n"
 
 info:
-  owner: "👑 **Owner: {}**\n"
-  modules: ":cd: **Modules: {}**\n"
-  guilds: "🏰 **Guilds: {}**"
+  owner: "👑 **Owner: `{}`**\n"
+  modules: ":cd: **Modules: `{}`**\n"
+  guilds: "🏰 **Guilds: `{}`**\n"
+  uptodate: " (**Up to date**)\n"
+  update: "❕ **Update available**\n"
+  version: "🌟 **Linto version**: `{}`"
 
 settings:
   noprefix: "❌ **You must pass prefix**"
-  chprefix: "✔ **You successfully changed prefix to** `{}`"
+  chprefix: ":white_check_mark: **You successfully changed prefix to** `{}`"
   nolanguage: "❌ **Wrong language**"
-  chlanguage: "✔ **You successfully changed language to** `{}`"
+  chlanguage: ":white_check_mark: **You successfully changed language to** `{}`"
   noreply: "❌ **No reply or no file**"
-  loadedmod: "✔ **Loaded** `{}` **module**"
+  loadedmod: ":white_check_mark: **Loaded** `{}` **module**"
   alreadyloaded: "❌ **Module already loaded**"
   error: "❌ **Command error**, `{}`\n```py\n{}\n```"

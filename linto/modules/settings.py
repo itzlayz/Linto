@@ -6,6 +6,7 @@
 # https://www.gnu.org/licenses/agpl-3.0.html 
 
 import logging
+import aiohttp
 import sys
 import os
 
@@ -15,6 +16,7 @@ from .. import utils, loader
 class Settings(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
+        self.description = "Configure your selfbot"
     
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
@@ -68,7 +70,28 @@ class Settings(commands.Cog):
 
         filename = attachment.filename[:-3]
         await ctx.reply(self.translations["loadedmod"].format(filename))
+    
+    @commands.command(aliases=["dlmod", "downloadmod"])
+    async def dlink(self, ctx, link: str):
+        session = aiohttp.ClientSession()
+        response = None
+        source = None
 
+        try:
+            response = await session.get(link)
+            response.raise_for_status()
+            
+            source = await response.text()
+        except:
+            raise
+                
+        try:
+            name = await loader.load_string(self.bot, loader.get_spec(source))
+        except commands.errors.ExtensionAlreadyLoaded:
+            return await ctx.reply(self.translations["alreadyloaded"])
+
+        await session.close()
+        await ctx.reply(self.translations["loadedmod"].format(name))
 
     @commands.command(aliases=["restartbot"])
     async def restart(self, ctx):

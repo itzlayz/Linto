@@ -9,7 +9,7 @@ import discord
 import logging
 import os
 
-from . import __version__, patch
+from . import __version__, version, patch
 from .localization import Translations
 from discord.ext import commands
 
@@ -49,9 +49,9 @@ async def on_ready():
         repo = git.Repo()
 
         _hash = repo.head.commit.hexsha
-        diff = str(repo.git.rev_parse("HEAD")) == _hash
+        diff = repo.git.log([f"HEAD..origin/{version.branch}", "--oneline"])
 
-        version = ".".join(map(str, __version__))
+        _version = ".".join(map(str, __version__))
         update = "Up to date" if not diff else "Update available"
 
         banner = (
@@ -62,7 +62,7 @@ async def on_ready():
         print(
             f"{banner}\n"
             f"→ Git hash: {_hash[:7]}\n"
-            f"→ Version: {version}\n",
+            f"→ Version: {_version}\n",
             f"→ {update}"
         )  
     except:  # noqa: E722

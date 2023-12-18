@@ -26,6 +26,8 @@ h1 {
     padding: 15px;
     background-color: #333;
     border-radius: 5px;
+    max-height: max-content;
+    animation: fadeIn 0.25s ease-in-out;
 }
 
 button {
@@ -37,7 +39,7 @@ button {
     border-radius: 5px;
     cursor: pointer;
 }
-
+    
 textarea {
     width: 100%;
     padding: 10px;
@@ -57,4 +59,22 @@ input {
     width: auto;
     height: 30px;
     font-family: Verdana;
+}
+
+button:hover {
+    background-color: #4285f4;
+}
+
+#main {
+    animation: fadeIn 1s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }

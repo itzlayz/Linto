@@ -109,3 +109,6 @@ async def check_output(command: str) -> asyncio.subprocess.Process:
     )
 
     return proc.stdout
+
+def iniFormatting(text: str):
+    return "```ini\n[ " + text + " ]\n```"

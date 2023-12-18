@@ -49,4 +49,4 @@ async def load_string(bot: commands.Bot, spec: ModuleSpec):
     if issubclass(module, commands.Cog):
         return module.__cog_name__
     
-    return None
+    return name

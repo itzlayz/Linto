@@ -1,12 +1,3 @@
-<!-- 
-    █ ▀█▀ ▀█ █   ▄▀█ █▄█ ▀█
-    █ ░█░ █▄ █▄▄ █▀█ ░█░ █▄
-    https://t.me/itzlayz
-                            
-    🔒 Licensed under the GNU AGPLv3
-    https://www.gnu.org/licenses/agpl-3.0.html  
--->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -30,7 +21,7 @@
         </div>
         <button onclick="toggleBlock('cogs')">Open/Close cogs</button>
         <br>
-    
+
         <div class="closed_block" id="eval" style="display: none;">
             <textarea id="evalText" placeholder="Enter code for evaluation"></textarea>
             <b id="evalResponse">Waiting for eval</b> <br>
@@ -38,11 +29,11 @@
         </div>
         <button onclick="toggleBlock('eval')">Open/Close eval</button>
         <br>
-        
+
         <div class="closed_block" id="consuming" style="display: none;">
             <b id="cpu">Waiting for update</b> <br>
             <b id="memory">Waiting for update</b> <br>
-    
+
             <button onclick="updateCount()">Update</button>
         </div>
         <button onclick="toggleBlock('consuming')">Open/Close consuming</button>
@@ -63,18 +54,17 @@
     <script>
         fetch("/authorize", {
             method: "POST",
-            body: JSON.stringify(
-                {"linto": localStorage.getItem("linto")}
-            )
+            body: JSON.stringify({
+                "linto": localStorage.getItem("linto")
+            })
         }).then(response => response.status)
-        .then((response) => {
-            if (response == 401)
-            {
-                location.replace(location.href + "login")
-            } else {
-                document.getElementById("main").style.display = "block";
-            }
-        })
+            .then((response) => {
+                if (response == 401) {
+                    location.replace(location.href + "login")
+                } else {
+                    document.getElementById("main").style.display = "block";
+                }
+            })
     </script>
 </body>
 </html>
