@@ -8,6 +8,7 @@
 import logging
 import aiohttp
 import sys
+import re
 import os
 
 from discord.ext import commands
@@ -68,7 +69,7 @@ class Settings(commands.Cog):
         source = await attachment.read()
         try:
             await loader.load_string(self.bot, loader.get_spec(source.decode()))
-        except commands.errors.ExtensionAlreadyLoaded:
+        except (commands.errors.ExtensionAlreadyLoaded, commands.errors.ClientException):
             return await ctx.reply(self.translations["alreadyloaded"])
 
         filename = attachment.filename[:-3]
@@ -80,21 +81,74 @@ class Settings(commands.Cog):
         response = None
         source = None
 
-        try:
-            response = await session.get(link)
+        async with session.get(link) as response:
             response.raise_for_status()
-            
             source = await response.text()
-        except:
-            raise
-                
+
         try:
             name = await loader.load_string(self.bot, loader.get_spec(source))
-        except commands.errors.ExtensionAlreadyLoaded:
+        except (commands.errors.ExtensionAlreadyLoaded, commands.errors.ClientException):
             return await ctx.reply(self.translations["alreadyloaded"])
 
         await session.close()
         await ctx.reply(self.translations["loadedmod"].format(name))
+    
+    @commands.command()
+    async def setrepo(self, ctx, path: str = ""):
+        pattern = r"[a-zA-Z]+/[a-zA-Z]+"
+        if not re.match(pattern, path):
+            path = "itzlayz/linto-modules"
+            
+            self.bot.db.set("linto.settings", "repo_path", path)
+            return await ctx.reply(
+                self.translations["defaultrepo"]
+            )
+
+        self.bot.db.set("linto.settings", "repo_path", path)
+        await ctx.reply(self.translations["changedrepo"])
+    
+    @commands.command()
+    async def dlrepo(self, ctx, module: str = ""):
+        path = self.bot.db.get("linto.settings", "repo_path", "itzlayz/linto-modules")
+        api_url = f"https://api.github.com/repos/{path}/git/trees/main"
+
+        async with aiohttp.ClientSession() as session:
+            response = await session.get(api_url)
+            response = await response.json()
+
+        if response.get("message", None):
+            return await ctx.reply(self.translations["not_found"])
+
+        files = [
+            file["path"] for file in response["tree"]
+            if file["path"].endswith(".py")
+        ]
+
+        if module not in files:
+            return await ctx.reply(
+                self.translations["module_list"].format(
+                    path,
+                    ", ".join(map(lambda x: f"`{x[:-3]}`", files))
+                )
+            )
+
+        raw_link = f"https://raw.githubusercontent.com/{path}/main/{module}"
+
+        async with aiohttp.ClientSession().get(raw_link) as source:
+            source = await source.text()
+            
+            try:
+                name = await loader.load_string(self.bot, loader.get_spec(source))
+            except (commands.errors.ExtensionAlreadyLoaded, commands.errors.ClientException):
+                return await ctx.reply(self.translations["alreadyloaded"])
+
+        await ctx.reply(self.translations["loadedmod"].format(name))
+
+
+    @commands.command(aliases=["latency"])
+    async def ping(self, ctx):
+        ping = str(round(self.bot.ws.latency * 1000, 2))
+        await ctx.reply(self.translations["latency"].format(ping))
 
     @commands.command(aliases=["restartbot"])
     async def restart(self, ctx):

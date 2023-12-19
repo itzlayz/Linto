@@ -18,3 +18,6 @@ settings:
   loadedmod: ":white_check_mark: **Loaded** `{}` **module**"
   alreadyloaded: "❌ **Module already loaded**"
   error: "❌ **Command error**, `{}`\n```py\n{}\n```"
+  not_found: "❌ **Invalid github path**"
+  latency: "⌛ **Websocket latency: `{}ms`**"
+  module_list: "📜 **Module list (`{}`):**\n{}"

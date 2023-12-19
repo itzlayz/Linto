@@ -47,6 +47,6 @@ async def load_string(bot: commands.Bot, spec: ModuleSpec):
     await bot._load_from_module_spec(spec, name)
     module = getattr(spec, dir(spec)[0])
     if issubclass(module, commands.Cog):
-        return module.__cog_name__
+        return module.__name__
     
     return name
