@@ -7,6 +7,17 @@
     https://www.gnu.org/licenses/agpl-3.0.html 
 */
 
+function redirect(endpoint) {
+    let cur = window.location.href;
+    let toReplace = "";
+
+    if (endpoint) { toReplace = "/" }
+    else { toReplace = "" }
+    
+    let newURL = cur.replace(/\/[^\/]*$/, toReplace + endpoint);
+    window.location.href = newURL;
+}
+
 async function unloadModule(cog) {
     try {
         await fetch('/unload', {
@@ -90,24 +101,5 @@ function toggleBlock(id) {
     if (btn)
     {
         btn.innerHTML = (moduleBlock.style.display === 'none') ? `Open ${id}` : `Close ${id}`;
-    }
-}
-
-async function updateCount() {
-    try {
-        const response = await fetch('/consuming', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        });
-        const data = await response.json();
-        let cpu = document.getElementById("cpu");
-        let memory = document.getElementById("memory");
-
-        cpu.innerText = `💽 CPU: ±${data.cpu}%`;
-        memory.innerText = `🧠 RAM: ±${data.memory}MB`;
-    } catch (error) {
-        console.error('Error during updating consuming:', error);
     }
 }

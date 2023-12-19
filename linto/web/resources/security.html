@@ -12,38 +12,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Linto manager</title>
+    <title>Linto security</title>
     <link rel="stylesheet" href="{{ static('style.css') }}">
+    <style>
+        .center {
+            justify-content: center;
+            text-align: center;
+        }
+    </style>
 </head>
 <body>
-    <h1>Linto manager</h1>
-    <div id="main" style="display: none;">
-        <div class="closed_block" id="cogs" style="display: none;">
-            <ul>
-                {% for cog in cogs %}
-                <li>
-                    {{ cog[0] }}: {{ cog[1] }}
-                    <button onclick="unloadModule('{{ cog[0] }}')">Unload</button>
-                </li>
-                {% endfor %}
-            </ul>
-        </div>
-        <button onclick="toggleBlock('cogs')">Open/Close cogs</button>
-        <br>
-
-        <div class="closed_block" id="eval" style="display: none;">
-            <textarea id="evalText" placeholder="Enter code for evaluation"></textarea>
-            <b id="evalResponse">Waiting for eval</b> <br>
-            <button onclick="discordEval()">Eval</button>
-        </div>
-        <button onclick="toggleBlock('eval')">Open/Close eval</button>
-        <br>
-
-        <br>
-
-        <button onclick="redirect('info')">Redirect to info page</button>
-        <button onclick="redirect('security')">Redirect to security page</button>
+    <h1>Linto security</h1>
+    <div id="main" class="center" style="display: none;">
+        <input type="password" id="chpassword"> <br>
+        <b id="passresp"></b> <br>
+        <button onclick="changePassword()">Change password</button>
+        <br> <br>
     </div>
+
+    <button onclick="redirect('')">Redirect to manager page</button>
+    <button onclick="redirect('info')">Redirect to info page</button>
 
     <script src="{{ static('script.js') }}"></script>
     <script>

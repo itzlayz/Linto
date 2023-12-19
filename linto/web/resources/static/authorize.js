@@ -7,6 +7,13 @@
     https://www.gnu.org/licenses/agpl-3.0.html 
 */
 
+function redirect() {
+    let cur = window.location.href;
+
+    let newURL = cur.replace(/\/[^\/]*$/, "");
+    window.location.href = newURL;
+}
+
 fetch("/authorize", {
     method: "POST",
     headers: {
@@ -18,7 +25,7 @@ fetch("/authorize", {
 })
     .then(response => {
         if (response.status !== 401) {
-            location.replace(location.href.replace("/login", ""));
+            redirect()
         }
     })
     .catch(error => console.error(error));
@@ -39,7 +46,8 @@ async function login() {
 
         if (response.status !== 401) {
             localStorage.setItem("linto", password);
-            location.replace(location.href.replace("/login", ""));
+            
+            redirect()
         } else {
             throw new Error("Invalid password");
         }

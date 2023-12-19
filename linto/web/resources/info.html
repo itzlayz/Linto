@@ -1,0 +1,30 @@
+<!-- 
+    █ ▀█▀ ▀█ █   ▄▀█ █▄█ ▀█
+    █ ░█░ █▄ █▄▄ █▀█ ░█░ █▄
+    https://t.me/itzlayz
+                            
+    🔒 Licensed under the GNU AGPLv3
+    https://www.gnu.org/licenses/agpl-3.0.html  
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linto info</title>
+    <link rel="stylesheet" href="{{ static('style.css') }}">
+</head>
+<body>
+    <b>💽 CPU: {{ cpu }}</b> <br>
+    <b>🧠 RAM: {{ memory }}</b> <br>
+    <b>🏰 Guilds: {{ guilds }}</b> <br> 
+    <b>⚙ Modules: {{ modules }}</b> <br> 
+    <br>
+
+    <button onclick="redirect('')">Redirect to manager page</button>
+    <button onclick="redirect('security')">Redirect to security page</button>
+    
+    <script src="{{ static('script.js') }}"></script>
+</body>
+</html>

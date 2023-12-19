@@ -34,12 +34,13 @@ class WebManager:
         self.app.router.add_static("/static/", "linto/web/resources/static")
 
         self.app.router.add_get("/", self.index)
+        self.app.router.add_get("/info", self.info)
         self.app.router.add_get("/login", self.login)
+        self.app.router.add_get("/security", self.security)
         
         self.app.router.add_post("/unload", self.unload)
         self.app.router.add_post("/chpass", self.changePassword)
         self.app.router.add_post("/authorize", self.authorize)
-        self.app.router.add_post("/consuming", self.consuming)
         self.app.router.add_post("/restart", self.restart)
         self.app.router.add_post("/eval", self.eval)
     
@@ -47,6 +48,24 @@ class WebManager:
     async def index(self, _):
         cogs = [(k, v.description or "No description") for k, v in self.bot.cogs.items()]
         return {"cogs": cogs}
+
+    @aiohttp_jinja2.template("security.html")
+    async def security(self, _):        
+        return {}
+
+    @aiohttp_jinja2.template("info.html")
+    async def info(self, _):
+        cpu = utils.get_cpu()
+        mem = utils.get_ram()
+        guilds = len((await self.bot.fetch_guilds(with_counts=False)))
+        modules = len(self.bot.cogs)
+
+        return {
+            "cpu": cpu,
+            "memory": mem,
+            "guilds": guilds,
+            "modules": modules
+        }
 
     @aiohttp_jinja2.template("login.html")
     async def login(self, _):
@@ -62,6 +81,7 @@ class WebManager:
 
     async def changePassword(self, request: web.Request):
         data = await request.json()
+
         password = data["password"]
         curpass = data.get("curpassword", "")
 
@@ -120,13 +140,6 @@ class WebManager:
         code = data["code"]
         output = await utils.epc(code, {"bot": self.bot})
         return web.Response(text=str(output).strip())
-
-    async def consuming(self, _):
-        cpu = utils.get_cpu()
-        mem = utils.get_ram()
-        
-        data = {"memory": mem, "cpu": cpu}
-        return web.json_response(data)
 
     async def start(self, port: int):
         logging.info("Starting web manager")
