@@ -7,11 +7,16 @@
 
 import os
 import ast
+import types
+import typing
+import inspect
 import asyncio
 import string
 import random
 import atexit
 import logging
+
+from contextlib import suppress
 
 logger = logging.getLogger()
 LETTERS = string.ascii_uppercase + string.ascii_lowercase + "".join(
@@ -46,6 +51,44 @@ async def epc(code, env={}):
         return (await eval(f"{fn_name}()", env))
     except Exception as error:
         return error
+    
+def suppress_exc(
+    func: types.FunctionType, 
+    exception: Exception = Exception,
+    coro_callback: types.FunctionType = None
+) -> typing.Any:
+    """
+    Supress function's exception
+    Supports asynchronous functions
+
+    :param func: Function to do
+    :param exception: Exception to supress (optional
+                      do not specify to supress all exceptions)
+    :return: Function output 
+    """
+    funcs = (types.FunctionType, types.LambdaType)
+
+    if not isinstance(func, funcs):
+        raise ValueError("Invalid type of function")
+    
+    if asyncio.iscoroutinefunction(func):
+        if not coro_callback:
+            raise ValueError(
+                "coro_callback is required for asynchronous functions")
+        
+        try:
+            loop = asyncio.get_running_loop()
+        except RuntimeError:
+            loop = asyncio.get_event_loop()
+
+        task = loop.create_task(func())
+        task.add_done_callback(lambda _: coro_callback(task.result()))
+
+        loop.run_until_complete(task)
+        return task.result()
+    
+    with suppress(exception):
+        return func()
 
 def get_ram() -> float:
     """
