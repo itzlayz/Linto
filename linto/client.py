@@ -62,7 +62,7 @@ async def on_ready():
         print(
             f"{banner}\n"
             f"→ Git hash: {_hash[:7]}\n"
-            f"→ Version: {_version}\n",
+            f"→ Version: {_version}\n"
             f"→ {update}"
         )  
     except:  # noqa: E722
