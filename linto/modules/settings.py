@@ -159,6 +159,3 @@ class Settings(commands.Cog):
         logging.info("Restarting")
         
         sys.exit(0)
-
-async def setup(bot):
-    await bot.add_cog(Settings(bot))

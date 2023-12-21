@@ -26,7 +26,3 @@ class Help(commands.Cog):
 
         help_message += "\n```"
         await ctx.send(help_message)
-
-
-async def setup(bot):
-    await bot.add_cog(Help(bot))

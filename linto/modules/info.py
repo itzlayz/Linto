@@ -38,6 +38,3 @@ class Info(commands.Cog):
     @commands.command(aliases=["weburl", "web_url"])
     async def webmanager(self, ctx):
         await ctx.reply(f"`{self.bot.webmanager._url}`")
-
-async def setup(bot):
-    await bot.add_cog(Info(bot))

@@ -34,6 +34,3 @@ class Eval(commands.Cog):
             output = f"```py\n{output}\n```"
 
         await ctx.reply(output)
-
-async def setup(bot):
-    await bot.add_cog(Eval(bot))
