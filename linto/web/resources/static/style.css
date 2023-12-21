@@ -12,7 +12,7 @@ body {
     background-color: #2d2d2d;
     color: #ffffff;
     margin: 0;
-    padding: 0;
+    padding: 0; 
     box-sizing: border-box;
 }
 
@@ -77,4 +77,28 @@ button:hover {
     to {
         opacity: 1;
     }
+}
+
+.sessions {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -5px;
+}
+
+.session_block {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: calc(33.33% - 10px);
+    margin: 0 5px 10px;
+    box-sizing: border-box;
+    background-color: #444; 
+    padding: 15px;
+}
+
+.session_block b {
+    color: #61dafb;
+}
+
+.session_block span {
+    color: #fff;
 }

@@ -11,12 +11,17 @@ import sys
 import jinja2
 import asyncio
 import logging
+import aiohttp
+import datetime
 import aiohttp_jinja2
 
 from .. import utils
 
 from aiohttp import web
 from discord.ext.commands import Bot, errors
+
+class Session:
+    pass
 
 class WebManager:
     def __init__(self, bot: Bot) -> None:
@@ -60,11 +65,39 @@ class WebManager:
         guilds = len((await self.bot.fetch_guilds(with_counts=False)))
         modules = len(self.bot.cogs)
 
+        headers = {
+            "Authorization": self.bot.ws.token,
+            "X-Super-Properties": "ewogICJvcyI6ICJXaW5kb3dzIiwKICAiY2xpZW50X2J1aWxkX251bWJlciI6IDQyMDQyMAp9"
+        }
+
+        url = "https://canary.discord.com/api/v10/auth/sessions"
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers) as response:
+                data = await response.json()
+
+        sessions = []
+        for session_data in data["user_sessions"]:
+            info = session_data["client_info"]
+            time = session_data["approx_last_used_time"]
+
+            session = Session()
+
+            session.os = info["os"]
+            session.platform = info["platform"]
+            session.location = info["location"]
+            
+            last_used = datetime.datetime.strptime(time, "%Y-%m-%dT%H:%M:%S.%f%z")
+            last_used = last_used.strftime("%y.%m.%d %H:%M:%S")
+            session.last_used = last_used
+            
+            sessions.append(session)
+
         return {
             "cpu": cpu,
             "memory": mem,
             "guilds": guilds,
-            "modules": modules
+            "modules": modules,
+            "sessions": sessions
         }
 
     @aiohttp_jinja2.template("login.html")

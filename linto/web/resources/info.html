@@ -16,14 +16,33 @@
     <link rel="stylesheet" href="{{ static('style.css') }}">
 </head>
 <body>
-    <b>💽 CPU: {{ cpu }}</b> <br>
-    <b>🧠 RAM: {{ memory }}</b> <br>
-    <b>🏰 Guilds: {{ guilds }}</b> <br> 
-    <b>⚙ Modules: {{ modules }}</b> <br> 
+    <div>
+        <b>💽 CPU: {{ cpu }}</b> <br>
+        <b>🧠 RAM: {{ memory }}</b> <br>
+        <b>🏰 Guilds: {{ guilds }}</b> <br> 
+        <b>⚙ Modules: {{ modules }}</b> <br> 
+    </div>
     <br>
 
     <button onclick="redirect('')">Redirect to manager page</button>
     <button onclick="redirect('security')">Redirect to security page</button>
+
+    <div class="closed_block" id="sessions" style="display: none;">
+        <b>Sessions: </b> <br><br>
+        
+        <div class="sessions">
+            {% for session in sessions %}
+            <div class="session_block">
+                <b>Session OS: <span>{{ session.os }}</span></b> <br>
+                <b>Session platform: <span>{{ session.platform }}</span></b> <br>
+                <b>Session location: <span>{{ session.location }}</span></b> <br>
+                <b>Session last used: <span>{{ session.last_used }}</span></b> <br> <br>
+            </div>
+            {% endfor %}
+        </div>
+        
+    </div>    
+    <button onclick="toggleBlock('sessions')">Open/Close sessions</button>
     
     <script src="{{ static('script.js') }}"></script>
 </body>
