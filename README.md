@@ -5,7 +5,7 @@
 ## Installation
 
 ```bash
-# Prerequisites: Python 3.8+
+# Requirements: Python 3.8+
 apt update && apt install git python3 python3-pip -y
 
 # Clone Linto repository and install requirements
