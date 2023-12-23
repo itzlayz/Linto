@@ -35,13 +35,15 @@ def insert_returns(body):
         if isinstance(body[-1], ast.With):
             insert_returns(body[-1].body)
 
-async def epc(code, env={}):
+async def epc(code, env=None):
     """
     Evaluate python code
     :param code: python code
     :param env: code globals
     :return: Output/Error no raise
     """
+    if env is None:
+        env = {}
     try:
         fn_name = "_eval_expr"
         cmd = "\n".join(f" {i}" for i in code.splitlines())
@@ -54,7 +56,6 @@ async def epc(code, env={}):
         return (await eval(f"{fn_name}()", env))
     except Exception as error:
         return error
-    
 def suppress_exc(
     func: types.FunctionType, 
     exception: Exception = Exception,
