@@ -6,6 +6,8 @@ import sys
 from discord.ext import commands
 from discord import Message, File, AllowedMentions, GuildSticker, StickerItem
 
+from .localization import Translations
+
 from typing import Sequence, Optional, Union
 from types import MethodType
 from io import BytesIO
@@ -26,6 +28,10 @@ class Bot(commands.Bot):
         ctx.reply = MethodType(reply, ctx)
 
         await self.invoke(ctx)
+
+def set_translations(cog: commands.Cog, db):
+    name = cog.__name__.lower()
+    cog.translations = Translations(db, name)
 
 async def reply(
     self: commands.Context,
@@ -89,11 +95,12 @@ async def _load_from_module_spec(
         setup = getattr(lib, 'setup')
     except AttributeError:
         try:
-            setup = get_module(lib)
+            module = get_module(lib)
+            setup = get_setup(module)
         except AttributeError:
             del sys.modules[key]
             raise errors.NoEntryPointError(key)
-
+        
     try:
         await setup(self)
     except Exception as e:
@@ -102,6 +109,8 @@ async def _load_from_module_spec(
         await self._call_module_finalizers(lib, key)
         raise errors.ExtensionFailed(key, e) from e
     else:
+        set_translations(module, self.db)
+
         try:
             self.__extensions[key] = lib
         except AttributeError:
@@ -117,9 +126,12 @@ def get_module(lib: importlib.machinery.ModuleSpec):
     for method in lib_dir:
         instance = getattr(lib, method, None)
         if isinstance(instance, CogType):
-            async def setup(bot):
-                await bot.add_cog(instance(bot))
-
-            return setup
+            return instance
 
     raise AttributeError("Attribute not found")
+
+def get_setup(instance):
+    async def setup(bot):
+        await bot.add_cog(instance(bot))
+    
+    return setup

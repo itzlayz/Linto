@@ -9,8 +9,7 @@ import discord
 import logging
 import os
 
-from . import __version__, version, patch
-from .localization import Translations
+from . import __version__, patch, utils
 from discord.ext import commands
 
 def gen_port() -> int:
@@ -49,7 +48,7 @@ async def on_ready():
         repo = git.Repo()
 
         _hash = repo.head.commit.hexsha
-        diff = repo.git.log([f"HEAD..origin/{version.branch}", "--oneline"])
+        diff = utils.git_sha
 
         _version = ".".join(map(str, __version__))
         update = "Up to date" if not diff else "Update available"
@@ -76,17 +75,6 @@ async def on_ready():
             except commands.errors.ExtensionAlreadyLoaded:
                 await bot.unload_extension(module)
                 await bot.load_extension(module)
-            finally:
-                if bot.extensions and module in bot.extensions:
-                    translations = Translations(bot.db, module.split('.')[-1])
-                    setattr(
-                        getattr(
-                            bot.extensions[module],
-                            dir(bot.extensions[module])[0]
-                        ),
-                        "translations", 
-                        translations
-                    )
 
     port = gen_port()
     await bot.webmanager.start(port)
@@ -108,16 +96,5 @@ async def reload(ctx):
                 text += f"`{count})` :white_check_mark: **{module}**\n"
             except Exception as error:
                 text += f"`{count})` :x: **{module}**: `{error}`\n"
-            finally:
-                if bot.extensions and module in bot.extensions:
-                    translations = Translations(bot.db, module.split('.')[-1])
-                    setattr(
-                        getattr(
-                            bot.extensions[module],
-                            dir(bot.extensions[module])[0]
-                        ),
-                        "translations", 
-                        translations
-                    )
     
     await ctx.reply(text)

@@ -7,9 +7,9 @@
 
 import os
 import ast
+import git
 import types
 import typing
-import inspect
 import asyncio
 import string
 import random
@@ -17,10 +17,13 @@ import atexit
 import logging
 
 from contextlib import suppress
+from . import version
 
 logger = logging.getLogger()
 LETTERS = string.ascii_uppercase + string.ascii_lowercase + "".join(
     str(i) for i in range(1, 10))
+    
+git_sha = git.Repo().git.log([f"HEAD..origin/{version.branch}", "--oneline"])
 
 def insert_returns(body):
     if isinstance(body[-1], ast.Expr):
