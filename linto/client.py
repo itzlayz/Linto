@@ -9,7 +9,7 @@ import discord
 import logging
 import os
 
-from . import __version__, patch, utils
+from . import __version__, patch, utils, version
 from discord.ext import commands
 
 def gen_port() -> int:
@@ -43,29 +43,23 @@ async def on_ready():
     bot.owner_id = bot.user.id
     bot.command_prefix = bot.db.get("linto", "prefix", ">")
 
-    try:
-        import git
-        repo = git.Repo()
+    _hash = utils.git_sha
+    diff = utils.git_diff()
 
-        _hash = repo.head.commit.hexsha
-        diff = utils.git_sha
+    _version = ".".join(map(str, __version__))
+    update = "Up to date" if not diff else "Update available"
 
-        _version = ".".join(map(str, __version__))
-        update = "Up to date" if not diff else "Update available"
-
-        banner = (
-            "█   █ █▄ █ ▀█▀ █▀█\n"
-            "█▄▄ █ █ ▀█  █  █▄█\n"
-        )
-        
-        print(
-            f"{banner}\n"
-            f"→ Git hash: {_hash[:7]}\n"
-            f"→ Version: {_version}\n"
-            f"→ {update}"
-        )  
-    except:  # noqa: E722
-        logging.exception("Git error, look for git in path")
+    banner = (
+        "█   █ █▄ █ ▀█▀ █▀█\n"
+        "█▄▄ █ █ ▀█  █  █▄█\n"
+    )
+    
+    print(
+        f"{banner}\n"
+        f"→ Git hash: {_hash[:7]}\n"
+        f"→ Version: {_version}\n"
+        f"→ {update}\n\n"
+    ) 
     
     for module in os.listdir("linto/modules"):
         if module.endswith(".py"):

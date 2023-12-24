@@ -7,7 +7,6 @@
 
 import os
 import ast
-import git
 import types
 import typing
 import asyncio
@@ -19,11 +18,15 @@ import logging
 from contextlib import suppress
 from . import version
 
+try:
+    import git
+    git_sha = git.Repo().head.commit.hexsha
+except:
+    logging.exception("Git error, look for git in path")
+
 logger = logging.getLogger()
 LETTERS = string.ascii_uppercase + string.ascii_lowercase + "".join(
     str(i) for i in range(1, 10))
-    
-git_sha = git.Repo().git.log([f"HEAD..origin/{version.branch}", "--oneline"])
 
 def insert_returns(body):
     if isinstance(body[-1], ast.Expr):
@@ -56,6 +59,7 @@ async def epc(code, env=None):
         return (await eval(f"{fn_name}()", env))
     except Exception as error:
         return error
+    
 def suppress_exc(
     func: types.FunctionType, 
     exception: Exception = Exception,
@@ -146,6 +150,17 @@ def rand(length: int = 10) -> str:
         random.choice(
             LETTERS) for _ in range(length)
     )
+
+def git_diff():
+    try:
+        import git
+        
+        repo = git.Repo()
+        diff = repo.git.log([f"HEAD..origin/{version.branch}", "--oneline"])
+
+        return diff
+    except:
+        logging.exception("Git error, look for git in path")
 
 async def check_output(command: str) -> asyncio.subprocess.Process:
     proc = await asyncio.create_subprocess_exec(

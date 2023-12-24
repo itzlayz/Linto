@@ -9,6 +9,8 @@ import asyncio
 import warnings
 import os
 
+
+from discord.errors import LoginFailure
 from .localization import Localization
 from .database import Database
 from .web import WebManager
@@ -36,7 +38,7 @@ async def _main():
         
         try:
             await bot.login(token)
-        except:
+        except LoginFailure:
             os.remove("token.txt")
             await _main()
 
