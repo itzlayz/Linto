@@ -58,7 +58,7 @@ async def on_ready():
         f"{banner}\n"
         f"→ Git hash: {_hash[:7]}\n"
         f"→ Version: {_version}\n"
-        f"→ {update}\n\n"
+        f"→ {update}\n"
     ) 
     
     for module in os.listdir("linto/modules"):
