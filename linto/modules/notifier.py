@@ -23,7 +23,7 @@ class Notifier(commands.Cog):
             async with session.get(self.url) as response:
                 response = await response.json()
 
-        commit_sha = response["object"]["sha"]
+        commit_sha = response.get("object", {}).get("sha", None)
         if commit_sha != str(git_sha) and not self.notified:
             self.notified = True
             logger.info(
