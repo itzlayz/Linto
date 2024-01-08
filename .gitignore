@@ -1,5 +1,5 @@
 token.txt
-config.json
+config-*.json
 __pycache__
 linto.log
 venv

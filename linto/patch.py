@@ -9,11 +9,13 @@ import importlib.util
 import importlib.machinery
 
 import sys
+import os
 
 from discord.ext import commands
 from discord import Message, File, AllowedMentions, GuildSticker, StickerItem
 
 from .localization import Translations
+from .client import logger, reload
 
 from typing import Sequence, Optional, Union
 from types import MethodType
@@ -22,10 +24,49 @@ from io import BytesIO
 errors = commands.errors
 CogType = (commands.Cog, commands.cog.CogMeta)
 
+def gen_port() -> int:
+    import random, socket  # noqa: E401
+
+    if "DOCKER" in os.environ:
+        return 8080
+    
+    while port := random.randint(1024, 65536):
+        if socket.socket(
+            socket.AF_INET, 
+            socket.SOCK_STREAM
+        ).connect_ex(
+            ("localhost", port)
+        ):
+            break
+
+    return port
+
 class Bot(commands.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        self.webmanager = None
         self._load_from_module_spec = MethodType(_load_from_module_spec, self)
+
+    async def on_ready(self):
+        self.add_command(reload)
+        self.remove_command("help")
+
+        self.owner_id = self.user.id
+        self.command_prefix = self.db.get("linto", "prefix", ">")
+
+        logger.info(f"Logged as {self.user}")    
+        for module in os.listdir("linto/modules"):
+            if module.endswith(".py"):
+                module = "linto.modules." + module[:-3]
+                try:
+                    await self.load_extension(module)
+                except commands.errors.ExtensionAlreadyLoaded:
+                    await self.unload_extension(module)
+                    await self.load_extension(module)
+
+        port = gen_port()
+        await self.webmanager.start(port)
 
     async def process_commands(self, message: Message, /):
         if message.author.bot:
