@@ -24,11 +24,12 @@ class Notifier(commands.Cog):
                 response = await response.json()
 
         commit_sha = response.get("object", {}).get("sha", None)
-        if commit_sha != str(git_sha) and not self.notified:
-            self.notified = True
-            logger.info(
-                "New update available! ({} -> {})".format(
-                    str(git_sha)[:6],
-                    commit_sha[:6]
+        if commit_sha:
+            if commit_sha != str(git_sha) and not self.notified:
+                self.notified = True
+                logger.info(
+                    "New update available! ({} -> {})".format(
+                        str(git_sha)[:6],
+                        commit_sha[:6]
+                    )
                 )
-            )
