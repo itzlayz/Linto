@@ -34,7 +34,7 @@ async def _main():
             await _main()
     else:
         with open("token.txt", "r") as file:
-            token = file.read()
+            token = file.readlines()[0]
         
         try:
             await bot.login(token)

@@ -9,7 +9,7 @@ import discord
 import logging
 import os
 
-from . import __version__, patch, utils, version
+from . import __version__, patch, utils
 from discord.ext import commands
 
 def gen_port() -> int:
