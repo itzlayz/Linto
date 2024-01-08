@@ -22,7 +22,8 @@ class Help(commands.Cog):
             command_names = [cmd.name for cmd in cog.get_commands()]
             commands_list = ", ".join([f"{prefix}{cmd}" for cmd in command_names])
 
-            help_message += f"[ {cog_name.title()} ]: {commands_list}\n"
+            if commands_list:
+                help_message += f"[ {cog_name.title()} ]: {commands_list}\n"
 
         help_message += "\n```"
         await ctx.send(help_message)
