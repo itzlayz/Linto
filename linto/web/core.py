@@ -188,7 +188,6 @@ class WebManager:
         return web.Response(text=str(output).strip())
 
     async def start(self, port: int):
-        logging.info("Starting web manager")
         self.password = self.bot.db.get(
             "linto_web", "password", None) or utils.rand()
         
@@ -233,4 +232,4 @@ class WebManager:
             self.proc.terminate()
             self._url = f"http://localhost:{port}"
         
-        logging.info(f"Web manager on {self._url}")
+        logging.info(f"{self.bot.user} manager - {self._url}")

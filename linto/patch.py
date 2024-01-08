@@ -55,7 +55,7 @@ class Bot(commands.Bot):
         self.owner_id = self.user.id
         self.command_prefix = self.db.get("linto", "prefix", ">")
 
-        logger.info(f"Logged as {self.user}")    
+        logger.info(f"{self.user} is ready to use")    
         for module in os.listdir("linto/modules"):
             if module.endswith(".py"):
                 module = "linto.modules." + module[:-3]
