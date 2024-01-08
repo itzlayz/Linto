@@ -41,6 +41,7 @@ class WebManager:
         self.app.router.add_get("/", self.index)
         self.app.router.add_get("/info", self.info)
         self.app.router.add_get("/login", self.login)
+        self.app.router.add_get("/sessions", self.sessions)
         self.app.router.add_get("/security", self.security)
         
         self.app.router.add_post("/unload", self.unload)
@@ -65,6 +66,21 @@ class WebManager:
         guilds = len((await self.bot.fetch_guilds(with_counts=False)))
         modules = len(self.bot.cogs)
 
+        sessions = await self.sessions()
+
+        return {
+            "cpu": cpu,
+            "memory": mem,
+            "guilds": guilds,
+            "modules": modules,
+            "sessions": sessions
+        }
+
+    @aiohttp_jinja2.template("login.html")
+    async def login(self, _):
+        return {}
+    
+    async def sessions(self):
         headers = {
             "Authorization": self.bot.ws.token,
             "X-Super-Properties": "ewogICJvcyI6ICJXaW5kb3dzIiwKICAiY2xpZW50X2J1aWxkX251bWJlciI6IDQyMDQyMAp9"
@@ -91,18 +107,15 @@ class WebManager:
             session.last_used = last_used
             
             sessions.append(session)
+        
+        return sessions
 
-        return {
-            "cpu": cpu,
-            "memory": mem,
-            "guilds": guilds,
-            "modules": modules,
-            "sessions": sessions
-        }
+    async def sessions_info(self, request: web.Request):
+        if not self.checkAuth(request):
+            return web.Response(status=401)
 
-    @aiohttp_jinja2.template("login.html")
-    async def login(self, _):
-        return {}
+        sessions = await self.sessions()
+        return web.json_response({"sessions": sessions})
 
     async def checkAuth(self, request: web.Request):
         data = await request.json()
