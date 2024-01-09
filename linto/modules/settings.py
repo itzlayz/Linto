@@ -18,6 +18,7 @@ class Settings(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
         self.description = "Configure your selfbot"
+        self.config = {"test": True}
     
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
@@ -40,7 +41,7 @@ class Settings(commands.Cog):
                 self.translations["noprefix"])
         
         self.bot.command_prefix = prefix
-        self.bot.db.set("linto", "prefix", prefix)
+        self.db.set("linto", "prefix", prefix)
         await ctx.reply(self.translations["chprefix"].format(prefix))
     
     @commands.command(aliases=["setlang"])
@@ -53,7 +54,7 @@ class Settings(commands.Cog):
             return await ctx.reply(
                 self.translations["nolanguage"])
         
-        self.bot.db.set("linto", "language", language)
+        self.db.set("linto", "language", language)
         await ctx.reply(self.translations["chlanguage"].format(language))
 
     @commands.command(aliases=["lm", "loadmod"])
@@ -99,17 +100,17 @@ class Settings(commands.Cog):
         if not re.match(pattern, path):
             path = "itzlayz/linto-modules"
             
-            self.bot.db.set("linto.settings", "repo_path", path)
+            self.db.set("linto.settings", "repo_path", path)
             return await ctx.reply(
                 self.translations["defaultrepo"]
             )
 
-        self.bot.db.set("linto.settings", "repo_path", path)
+        self.db.set("linto.settings", "repo_path", path)
         await ctx.reply(self.translations["changedrepo"])
     
     @commands.command()
     async def dlrepo(self, ctx, module: str = ""):
-        path = self.bot.db.get("linto.settings", "repo_path", "itzlayz/linto-modules")
+        path = self.db.get("linto.settings", "repo_path", "itzlayz/linto-modules")
         api_url = f"https://api.github.com/repos/{path}/git/trees/main"
 
         async with aiohttp.ClientSession() as session:

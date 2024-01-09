@@ -18,7 +18,7 @@ discord.utils._get_build_number = get
 logger = logging.getLogger()
 
 @commands.command()
-async def reload(ctx):
+async def reload(ctx: commands.Context):
     text = ""
     count = 0
     for module in os.listdir("linto/modules"):
@@ -26,10 +26,9 @@ async def reload(ctx):
             count += 1
             module = "linto.modules." + module[:-3]
             try:
-                await ctx.bot.load_extension(module)
+                await ctx.bot.reload_extension(module)
                 text += f"`{count})` :white_check_mark: **{module}**\n"
             except commands.errors.ExtensionAlreadyLoaded:
-                await ctx.bot.unload_extension(module)
                 await ctx.bot.load_extension(module)
                 text += f"`{count})` :white_check_mark: **{module}**\n"
             except Exception as error:

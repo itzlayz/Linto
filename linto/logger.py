@@ -30,4 +30,7 @@ def init():
     logging.getLogger("discord").setLevel(logging.ERROR)
     logging.getLogger("git").setLevel(logging.WARNING)
 
+    logging.getLogger("flet_core").setLevel(logging.FATAL)
+    logging.getLogger("flet_runtime").setLevel(logging.FATAL)
+
     return logger

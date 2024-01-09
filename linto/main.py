@@ -5,11 +5,13 @@ import os
 from discord.errors import LoginFailure
 
 from .localization import Localization
+from .patch import Bot as patchBot
 from .database import Database
 from .web import WebManager
-from .patch import Bot as patchBot
+from .flet import init_flet
 from .logger import init
 from .auth import Auth
+
 
 from . import utils, __version__
 
@@ -19,6 +21,9 @@ class Linto:
     def __init__(self):
         self.loop = None
         self.tokens = []
+
+        self.flet_app = False
+        self.no_web = False
 
     def linto_badge(self):
         _hash = utils.git_sha
@@ -44,8 +49,15 @@ class Linto:
             client = patchBot(command_prefix=">", self_bot=True)
             _id = token.split('.')[0][:7]
 
-            web = WebManager(client)
-            client.webmanager = web
+            if self.no_web:
+                client.webmanager = False
+            else:
+                web = WebManager(client)
+                client.webmanager = web
+
+            client.flet_app = self.flet_app
+            if self.flet_app:
+                client.flet = init_flet
 
             database = Database(f"config-{_id}.json")
             client.db = client.config = database
@@ -73,7 +85,6 @@ class Linto:
                 del auth
                 await self.amain()
         else:
-            self.linto_badge()
             with open("token.txt", "r") as file:
                 self.tokens = [token.strip() for token in file.readlines()]
 
@@ -82,8 +93,14 @@ class Linto:
 
     def main(self):
         warnings.filterwarnings("ignore")
+        
+        self.linto_badge()
         asyncio.run(self.amain())
 
-def main():
+using_flet = False
+def main(no_web: bool = False, flet_app: bool = False):    
     linto = Linto()
+    linto.no_web = no_web
+    linto.flet_app = flet_app
+
     linto.main()

@@ -8,6 +8,27 @@
 from . import main
 from contextlib import suppress
 
+from argparse import ArgumentParser
+
+parser = ArgumentParser()
+parser.add_argument(
+    "--flet",
+    dest="flet_app",
+    action="store_true"
+)
+parser.add_argument(
+    "--no-web",
+    dest="no_web",
+    action="store_true"
+)
+args = parser.parse_args()
+
 if __name__ == "__main__":
     with suppress(KeyboardInterrupt):
-        main.main()
+        main.main(
+            getattr(args, "no_web", False),
+            getattr(args, "flet_app", False),
+        )
+
+    if getattr(args, "flet_app", False):
+        exit(0)

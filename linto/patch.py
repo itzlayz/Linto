@@ -16,6 +16,7 @@ from discord import Message, File, AllowedMentions, GuildSticker, StickerItem
 
 from .localization import Translations
 from .client import logger, reload
+from .database import Database
 
 from typing import Sequence, Optional, Union
 from types import MethodType
@@ -41,16 +42,53 @@ def gen_port() -> int:
 
     return port
 
+def _is_submodule(parent: str, child: str) -> bool:
+    return parent == child or child.startswith(parent + ".")
+
 class Bot(commands.Bot):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.flet = None
+        self.flet_app: bool = False
+
         self.webmanager = None
+        self.db: Database = None
+        
+        self.remove_command("help")
         self._load_from_module_spec = MethodType(_load_from_module_spec, self)
+
+    async def reload_extension(self, name: str, *, package: Optional[str] = None) -> None:
+        """From disnake"""
+        name = self._resolve_name(name, package)
+        try:
+            lib = self.__extensions.get(name)
+        except AttributeError:
+            self.__extensions = {}
+
+        modules = {
+            name: module
+            for name, module in sys.modules.items()
+            if _is_submodule(lib.__name__, name)
+        }
+        
+        if lib is None:
+            if not modules.get(name):
+                await self.load_extension(name)
+                return
+
+        try:
+            await self.unload_extension(name)
+            await self.load_extension(name)
+        except Exception:
+            lib.setup(self)
+            self.__extensions[name] = lib
+
+            sys.modules.update(modules)
+            raise
 
     async def on_ready(self):
         self.add_command(reload)
-        self.remove_command("help")
 
         self.owner_id = self.user.id
         self.command_prefix = self.db.get("linto", "prefix", ">")
@@ -65,8 +103,12 @@ class Bot(commands.Bot):
                     await self.unload_extension(module)
                     await self.load_extension(module)
 
-        port = gen_port()
-        await self.webmanager.start(port)
+        if self.webmanager:
+            port = gen_port()
+            await self.webmanager.start(port)
+
+        if self.flet_app:
+            await self.flet(self)
 
     async def process_commands(self, message: Message, /):
         if message.author.bot:
@@ -79,6 +121,8 @@ class Bot(commands.Bot):
 
 def set_translations(cog: commands.Cog, db):
     name = cog.__name__.lower()
+
+    cog.db = cog.database = db
     cog.translations = Translations(db, name)
 
 async def reply(

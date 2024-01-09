@@ -164,13 +164,13 @@ def git_diff():
 
 async def check_output(command: str) -> asyncio.subprocess.Process:
     proc = await asyncio.create_subprocess_exec(
-        command, 
+        command.strip(), 
         stdin=asyncio.subprocess.STDOUT,
         stderr=asyncio.subprocess.STDOUT,
         stdout=asyncio.subprocess.STDOUT
     )
 
-    return proc.stdout
+    return proc
 
 def iniFormatting(text: str):
     return "```ini\n[ " + text + " ]\n```"
