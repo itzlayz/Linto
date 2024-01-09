@@ -97,7 +97,6 @@ class Linto:
         self.linto_badge()
         asyncio.run(self.amain())
 
-using_flet = False
 def main(no_web: bool = False, flet_app: bool = False):    
     linto = Linto()
     linto.no_web = no_web
