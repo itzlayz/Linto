@@ -72,15 +72,36 @@ async def init_flet(bot):
                     ]
                 )
             )
+
+            self.presence_status = ft.Dropdown(
+                width=300,
+                label="Presence status",
+                autofocus=True,
+                options=[
+                    ft.dropdown.Option("Online"),
+                    ft.dropdown.Option("Offline"),
+                    ft.dropdown.Option("Do not disturb"),
+                    ft.dropdown.Option("Idle")
+                ], on_change=self.change_status
+            )
+            self.presence = ft.Container(
+                ft.Row(
+                    controls=[
+                        self.presence_status
+                    ]
+                )
+            )
             
             self.tabs = {
                 "Evaluator": self.evaluator,
-                "Terminal": self.terminal
+                "Terminal": self.terminal,
+                "Presence": self.presence
             }
             self.linto_tabs = ft.Tabs(
                 tabs=[
                     ft.Tab("Evaluator"),
                     ft.Tab("Terminal"),
+                    ft.Tab("Presence"),
                 ], on_change=self.change_tab
             )
 
@@ -98,6 +119,16 @@ async def init_flet(bot):
 
             self.current_tab.content = tab_content
             await super().update_async()
+
+        async def change_status(self, event):
+            statuses = {
+                "Online": discord.Status.online,
+                "Offline": discord.Status.offline,
+                "Do not disturb": discord.Status.dnd,
+                "Idle": discord.Status.idle
+            }
+            status = statuses[self.presence_status.value]
+            await self.bot.change_presence(status=status)
 
         async def bash(self, event):
             code = self.terminal_input.value
