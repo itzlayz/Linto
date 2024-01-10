@@ -27,7 +27,10 @@ class Localization:
     def translations(self):
         translations = {}
         for lang in map(lambda x: x[:-4], self.languages):
-            with open(f"linto/languages/{lang}.yml") as file:
+            with open(
+                f"linto/languages/{lang}.yml", 
+                "rt", encoding="utf8"
+            ) as file:
                 translations[lang] = yaml.safe_load(file)
         
         return translations
