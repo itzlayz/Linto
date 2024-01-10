@@ -12,7 +12,7 @@ import sys
 import os
 
 from discord.ext import commands
-from discord import Message, File, AllowedMentions, GuildSticker, StickerItem
+from discord import Message, File, AllowedMentions, GuildSticker, StickerItem, ClientException
 
 from .localization import Translations
 from .client import logger, reload
@@ -61,30 +61,32 @@ class Bot(commands.Bot):
     async def reload_extension(self, name: str, *, package: Optional[str] = None) -> None:
         """From disnake"""
         name = self._resolve_name(name, package)
+        lib = None
+
         try:
             lib = self.__extensions.get(name)
         except AttributeError:
             self.__extensions = {}
 
-        modules = {
-            name: module
-            for name, module in sys.modules.items()
-            if _is_submodule(lib.__name__, name)
-        }
-        
-        if lib is None:
-            if not modules.get(name):
-                await self.load_extension(name)
-                return
+        if lib:
+            modules = {
+                name: module
+                for name, module in sys.modules.items()
+                if _is_submodule(lib.__name__, name)
+            }
 
         try:
-            await self.unload_extension(name)
-            await self.load_extension(name)
-        except Exception:
-            lib.setup(self)
-            self.__extensions[name] = lib
+            try:
+                await self.load_extension(name)
+            except: # error -> unload
+                await self.load_extension(name)            
+        except:
+            if lib:
+                lib.setup(self)
+                self.__extensions[name] = lib
 
-            sys.modules.update(modules)
+                sys.modules.update(modules)
+
             raise
 
     async def on_ready(self):
@@ -102,7 +104,7 @@ class Bot(commands.Bot):
                 except commands.errors.ExtensionAlreadyLoaded:
                     await self.unload_extension(module)
                     await self.load_extension(module)
-
+        
         if self.webmanager:
             port = gen_port()
             await self.webmanager.start(port)

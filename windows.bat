@@ -4,8 +4,8 @@ cls
 color 9
 
 echo 1 - Linto with flet app
-echo 2 - Linto without managers
-echo Anything else - Linto with web manager
+echo 2 - Linto with web manager
+echo Anything else - Linto without managers
 echo.
 
 set /p choice=Choose option: 
@@ -17,13 +17,13 @@ if "%choice%"== "1" (
 
     python -m linto --no-web --flet
 ) else if "%choice%"== "2" (
-    echo Starting linto without managers.
-    echo.
-    
-    python -m linto --no-web
-) else (
-    echo Starting linto with web.
+    echo Starting linto web manager.
     echo.
     
     python -m linto
+) else (
+    echo Starting linto without managers.
+    echo.
+
+    python -m linto --no-web
 )

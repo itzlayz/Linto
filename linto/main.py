@@ -12,11 +12,9 @@ from .flet import init_flet
 from .logger import init
 from .auth import Auth
 
-
 from . import utils, __version__
 
 logger = init()
-
 class Linto:
     def __init__(self):
         self.loop = None
@@ -49,9 +47,7 @@ class Linto:
             client = patchBot(command_prefix=">", self_bot=True)
             _id = token.split('.')[0][:7]
 
-            if self.no_web:
-                client.webmanager = False
-            else:
+            if not self.no_web:
                 web = WebManager(client)
                 client.webmanager = web
 
