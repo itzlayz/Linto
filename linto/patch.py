@@ -12,7 +12,7 @@ import sys
 import os
 
 from discord.ext import commands
-from discord import Message, File, AllowedMentions, GuildSticker, StickerItem, ClientException
+from discord import Message, File, AllowedMentions, GuildSticker, StickerItem
 
 from .localization import Translations
 from .client import logger, reload

@@ -18,7 +18,6 @@ class Settings(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
         self.description = "Configure your selfbot"
-        self.config = {"test": True}
     
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
