@@ -8,6 +8,10 @@
 import importlib.util
 import importlib.machinery
 
+import traceback
+import aiohttp
+import typing
+import json
 import sys
 import os
 
@@ -58,6 +62,50 @@ class Bot(commands.Bot):
         self.remove_command("help")
         self._load_from_module_spec = MethodType(_load_from_module_spec, self)
 
+    async def edit_bio(
+        self,
+        banner_color: int = 0,
+        pronouns: str = "",
+        bio: str = "",
+    ) -> typing.List[typing.Optional[dict]]:
+        """
+        IMPORTANT:
+        For example, if you pass the bio and pronouns with banner_color
+        aren't passed, they will be replaced by default values.
+
+        Avatar and username are not available because they need captcha.
+
+        Edit bio without solving captcha:
+        @me/profile - banner_color, pronouns, bio
+
+        :param banner_color: Banner color in profile
+        :param pronouns: Pronouns in profile
+        :param bio: Biography in profile
+
+        :return: All responses (avatar/global_name, banner_color/pronouns/bio)
+        """
+        responses = []
+        async with aiohttp.ClientSession() as session:            
+            if banner_color or pronouns or bio:
+                payload = {
+                    k: v 
+                    for k, v in zip(
+                        ["accent_color", "pronouns", "bio"],
+                        [banner_color, pronouns, bio]
+                    ) if v
+                }
+                headers = {"Content-Type": "application/json",
+                           "Authorization": self.ws.token}
+
+                async with session.patch(
+                    "https://discord.com/api/v9/users/%40me/profile",
+                    data=json.dumps(payload), headers=headers
+                ) as response:
+                    response_json = await response.json()
+                    responses.append({"name": "@me/profile", "json": response_json})
+                
+        return responses
+
     async def reload_extension(self, name: str, *, package: Optional[str] = None) -> None:
         """From disnake"""
         name = self._resolve_name(name, package)
@@ -104,6 +152,8 @@ class Bot(commands.Bot):
                 except commands.errors.ExtensionAlreadyLoaded:
                     await self.unload_extension(module)
                     await self.load_extension(module)
+                except:
+                    traceback.print_exc()
         
         if self.webmanager:
             port = gen_port()

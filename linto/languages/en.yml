@@ -21,3 +21,12 @@ settings:
   not_found: "❌ **Invalid github path**"
   latency: "⌛ **Websocket latency: `{}ms`**"
   module_list: "📜 **Module list (`{}`):**\n{}"
+
+config:
+  pass_value: "❌ **You must pass value to edit key**"
+  invalid_key: "❌ **Invalid key, example:** `module.key`"
+  invalid_module: "❌ **Invalid module**"
+  invalid_value: "❌ **Invalid value (need `{}`)**"
+  no_config: "❌ **Config not found**"
+  no_key: "❌ **Key not found**"
+  successful: "✔ **Successfuly changed {}'s value"
