@@ -88,7 +88,18 @@ async def init_flet(bot):
 
         await page.add_async(flet_app)
 
-    await ft.app_async(app, host="localhost", port=8080)
-    logger.info("Flet app started (also on http://localhost:8080)")
+    try:
+        import flet_fastapi
+        from uvicorn import Server, Config
 
-    return flet_app
+        fastapi = flet_fastapi.FastAPI()
+        fastapi.mount("/", flet_fastapi.app(app))
+
+        config = Config(fastapi, "localhost", "7070", log_level=60)
+        server = Server(config)
+
+        await server.serve()
+    except ImportError:
+        logger.error("Install `web_requirements.txt` to use flet-app in web browser")
+
+    await ft.app_async(app)

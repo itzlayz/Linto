@@ -32,5 +32,6 @@ def init():
 
     logging.getLogger("flet_core").setLevel(logging.FATAL)
     logging.getLogger("flet_runtime").setLevel(logging.FATAL)
+    logging.getLogger("flet_fastapi").setLevel(logging.FATAL)
 
     return logger
