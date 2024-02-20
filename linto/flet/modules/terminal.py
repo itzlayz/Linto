@@ -3,13 +3,15 @@ from ... import utils
 
 import traceback
 
+
 class Terminal(ft.UserControl):
     def __init__(self):
         super().__init__()
 
         self.terminal_input = ft.TextField(hint_text="Enter code to bash", width=250)
         self.terminal_submit = ft.FloatingActionButton(
-            "Bash", on_click=self.bash, width=200)
+            "Bash", on_click=self.bash, width=200
+        )
         self.terminal_output = ft.Text()
 
         self.terminal = ft.Container(
@@ -18,7 +20,7 @@ class Terminal(ft.UserControl):
                     ft.Text("Terminal"),
                     self.terminal_input,
                     self.terminal_submit,
-                    self.terminal_output
+                    self.terminal_output,
                 ]
             )
         )
@@ -28,7 +30,7 @@ class Terminal(ft.UserControl):
 
         try:
             output = await utils.check_output(code)
-            
+
             out = await output.stdout.read()
             if not out:
                 try:
@@ -38,7 +40,7 @@ class Terminal(ft.UserControl):
             else:
                 try:
                     out = out.decode()
-                except:
+                except UnicodeDecodeError:
                     pass
         except OSError:
             output = "Bash is not available on windows"

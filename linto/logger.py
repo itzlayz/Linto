@@ -1,11 +1,12 @@
 # █ ▀█▀ ▀█ █   ▄▀█ █▄█ ▀█
 # █ ░█░ █▄ █▄▄ █▀█ ░█░ █▄
 # https://t.me/itzlayz
-#                           
+#
 # 🔒 Licensed under the GNU AGPLv3
 # https://www.gnu.org/licenses/agpl-3.0.html
 
 import logging
+
 
 def init():
     handler = logging.StreamHandler()
@@ -14,8 +15,7 @@ def init():
     fileHandler = logging.FileHandler("linto.log", "w")
 
     fmt = logging.Formatter(
-        '%(asctime)s [%(levelname)s] %(name)s: %(message)s',
-        '%Y-%m-%d %H:%M:%S'
+        "%(asctime)s [%(levelname)s] %(name)s: %(message)s", "%Y-%m-%d %H:%M:%S"
     )
     handler.setFormatter(fmt)
     fileHandler.setFormatter(fmt)

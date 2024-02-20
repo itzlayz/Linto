@@ -6,6 +6,7 @@ from sys import version_info
 if version_info < (3, 12, 0):
     from distutils.util import strtobool
 else:
+
     def strtobool(val):
         """Convert a string representation of truth to true (1) or false (0).
 
@@ -14,20 +15,16 @@ else:
         'val' is anything else.
         """
         val = val.lower()
-        if val in ('y', 'yes', 't', 'true', 'on', '1'):
+        if val in ("y", "yes", "t", "true", "on", "1"):
             return 1
-        elif val in ('n', 'no', 'f', 'false', 'off', '0'):
+        elif val in ("n", "no", "f", "false", "off", "0"):
             return 0
         else:
             raise ValueError("invalid truth value %r" % (val,))
 
+
 class ModuleConfig(dict):
-    def __init__(
-        self,
-        module_name: str,
-        config_dict: dict,
-        database: Database
-    ):
+    def __init__(self, module_name: str, config_dict: dict, database: Database):
         self.module_name = module_name
         self.config_dict = config_dict
         self.db = database
@@ -35,21 +32,25 @@ class ModuleConfig(dict):
         super().__init__()
         for k, v in self.config_dict.items():
             super().__setitem__(k, self.db.get(self.module_name, k, v))
-    
+
     def __getitem__(self, __key: str):
-        return super().__getitem__(__key) if __key in self else self.db.get(
-            self.module_name, __key, None)
-    
+        return (
+            super().__getitem__(__key)
+            if __key in self
+            else self.db.get(self.module_name, __key, None)
+        )
+
     def __setitem__(self, __key: str, value) -> None:
         super().__setitem__(__key, value)
         self.db.set(self.module_name, __key, value)
 
-    def get(self, __key: str, __default = None):
+    def get(self, __key: str, __default=None):
         try:
             return self[__key]
         except KeyError:
             return __default
-        
+
+
 class Config(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
@@ -60,17 +61,13 @@ class Config(commands.Cog):
             if hasattr(module, "config") and isinstance(module.config, dict):
                 if not hasattr(module, "modified_config"):
                     module.modified_config = ModuleConfig(
-                        module.qualified_name,
-                        module.config,
-                        self.db
+                        module.qualified_name, module.config, self.db
                     )
 
         configs = [
             module.modified_config
             for module in self.bot.cogs.values()
-            if (
-                hasattr(module, "config")
-            ) and isinstance(module.config, dict)
+            if (hasattr(module, "config")) and isinstance(module.config, dict)
         ]
 
         text = "```ini\n"
@@ -111,19 +108,13 @@ class Config(commands.Cog):
                 value = bool(strtobool(value))
             except ValueError:
                 return await ctx.reply(
-                    self.translations["invalid_value"].format(
-                        "bool"
-                    )
+                    self.translations["invalid_value"].format("bool")
                 )
         elif isinstance(config[key], int):
             try:
                 value = int(value)
             except ValueError:
-                return await ctx.reply(
-                    self.translations["invalid_value"].format(
-                        "int"
-                    )
-                )
+                return await ctx.reply(self.translations["invalid_value"].format("int"))
 
         config[key] = value
         await ctx.reply(self.translations["sucessful"].format(key))

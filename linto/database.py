@@ -1,12 +1,13 @@
 # █ ▀█▀ ▀█ █   ▄▀█ █▄█ ▀█
 # █ ░█░ █▄ █▄▄ █▀█ ░█░ █▄
 # https://t.me/itzlayz
-#                           
+#
 # 🔒 Licensed under the GNU AGPLv3
 # https://www.gnu.org/licenses/agpl-3.0.html
 
 from lightdb import LightDB
-from typing import Any, KT, VT
+from typing import KT, VT
+
 
 class Database(LightDB):
     def __init__(self, location: str) -> None:
@@ -36,5 +37,3 @@ class Database(LightDB):
 
         self.save()
         return value
-    
-    

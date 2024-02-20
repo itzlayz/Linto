@@ -1,7 +1,7 @@
 # █ ▀█▀ ▀█ █   ▄▀█ █▄█ ▀█
 # █ ░█░ █▄ █▄▄ █▀█ ░█░ █▄
 # https://t.me/itzlayz
-#                           
+#
 # 🔒 Licensed under the GNU AGPLv3
 # https://www.gnu.org/licenses/agpl-3.0.html
 
@@ -12,6 +12,7 @@ from importlib.machinery import ModuleSpec
 
 from discord.ext import commands
 from .utils import rand
+
 
 class StringLoader(SourceLoader):
     def __init__(self, data: str, origin: str) -> None:
@@ -29,7 +30,8 @@ class StringLoader(SourceLoader):
 
     def get_data(self, _) -> str:
         return self.data
-    
+
+
 def get_spec(source: str) -> ModuleSpec:
     """
     Makes spec for string module
@@ -39,11 +41,8 @@ def get_spec(source: str) -> ModuleSpec:
     name = "linto.modules." + rand(5)
     origin = "<string>"
 
-    return ModuleSpec(
-        name,
-        StringLoader(source, origin),
-        origin=origin
-    )
+    return ModuleSpec(name, StringLoader(source, origin), origin=origin)
+
 
 async def load_string(bot: commands.Bot, spec: ModuleSpec):
     name = bot._resolve_name(spec.name, False)
@@ -55,5 +54,5 @@ async def load_string(bot: commands.Bot, spec: ModuleSpec):
     module = getattr(spec, dir(spec)[0])
     if issubclass(module, commands.Cog):
         return module.__name__
-    
+
     return name

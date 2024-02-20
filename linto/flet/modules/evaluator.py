@@ -4,13 +4,15 @@ from ... import utils
 import discord
 from discord.ext import commands
 
+
 class Evaluator(ft.UserControl):
     def __init__(self):
         super().__init__()
 
         self.eval_input = ft.TextField(hint_text="Enter code to eval", width=250)
         self.eval_submit = ft.FloatingActionButton(
-            "Evaluate", on_click=self.eval, width=200)
+            "Evaluate", on_click=self.eval, width=200
+        )
         self.eval_output = ft.Text()
 
         self.evaluator = ft.Container(
@@ -19,7 +21,7 @@ class Evaluator(ft.UserControl):
                     ft.Text("Evaluator"),
                     self.eval_input,
                     self.eval_submit,
-                    self.eval_output
+                    self.eval_output,
                 ]
             )
         )
@@ -31,7 +33,7 @@ class Evaluator(ft.UserControl):
             "web": self.bot.webmanager,
             "db": self.bot.db,
             "discord": discord,
-            "commands": commands
+            "commands": commands,
         }
         output = await utils.epc(code, env)
 

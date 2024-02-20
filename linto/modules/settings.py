@@ -1,9 +1,9 @@
 # █ ▀█▀ ▀█ █   ▄▀█ █▄█ ▀█
 # █ ░█░ █▄ █▄▄ █▀█ ░█░ █▄
 # https://t.me/itzlayz
-                    
+
 # 🔒 Licensed under the GNU AGPLv3
-# https://www.gnu.org/licenses/agpl-3.0.html 
+# https://www.gnu.org/licenses/agpl-3.0.html
 
 import logging
 import aiohttp
@@ -14,45 +14,37 @@ import os
 from discord.ext import commands
 from .. import utils, loader
 
+
 class Settings(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
         self.description = "Configure your selfbot"
-    
+
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
-        if hasattr(ctx.command, 'on_error'):
+        if hasattr(ctx.command, "on_error"):
             return
-        
+
         if isinstance(error, commands.errors.CommandNotFound):
             return
-        
-        await ctx.reply(
-            self.translations["error"].format(
-                ctx.message.content, error
-            )
-        )
-    
+
+        await ctx.reply(self.translations["error"].format(ctx.message.content, error))
+
     @commands.command()
     async def setprefix(self, ctx, prefix: str):
         if not prefix:
-            return await ctx.reply(
-                self.translations["noprefix"])
-        
+            return await ctx.reply(self.translations["noprefix"])
+
         self.bot.command_prefix = prefix
         self.db.set("linto", "prefix", prefix)
         await ctx.reply(self.translations["chprefix"].format(prefix))
-    
+
     @commands.command(aliases=["setlang"])
     async def setlanguage(self, ctx, language: str):
-        languages = map(
-            lambda x: x[:-4],
-            self.bot.localization.languages
-        )
+        languages = map(lambda x: x[:-4], self.bot.localization.languages)
         if not language or language not in languages:
-            return await ctx.reply(
-                self.translations["nolanguage"])
-        
+            return await ctx.reply(self.translations["nolanguage"])
+
         self.db.set("linto", "language", language)
         await ctx.reply(self.translations["chlanguage"].format(language))
 
@@ -69,12 +61,15 @@ class Settings(commands.Cog):
         source = await attachment.read()
         try:
             await loader.load_string(self.bot, loader.get_spec(source.decode()))
-        except (commands.errors.ExtensionAlreadyLoaded, commands.errors.ClientException):
+        except (
+            commands.errors.ExtensionAlreadyLoaded,
+            commands.errors.ClientException,
+        ):
             return await ctx.reply(self.translations["alreadyloaded"])
 
         filename = attachment.filename[:-3]
         await ctx.reply(self.translations["loadedmod"].format(filename))
-    
+
     @commands.command(aliases=["dlmod", "downloadmod"])
     async def dlink(self, ctx, link: str):
         session = aiohttp.ClientSession()
@@ -87,26 +82,27 @@ class Settings(commands.Cog):
 
         try:
             name = await loader.load_string(self.bot, loader.get_spec(source))
-        except (commands.errors.ExtensionAlreadyLoaded, commands.errors.ClientException):
+        except (
+            commands.errors.ExtensionAlreadyLoaded,
+            commands.errors.ClientException,
+        ):
             return await ctx.reply(self.translations["alreadyloaded"])
 
         await session.close()
         await ctx.reply(self.translations["loadedmod"].format(name))
-    
+
     @commands.command()
     async def setrepo(self, ctx, path: str = ""):
         pattern = r"[a-zA-Z]+/[a-zA-Z]+"
         if not re.match(pattern, path):
             path = "itzlayz/linto-modules"
-            
+
             self.db.set("linto.settings", "repo_path", path)
-            return await ctx.reply(
-                self.translations["defaultrepo"]
-            )
+            return await ctx.reply(self.translations["defaultrepo"])
 
         self.db.set("linto.settings", "repo_path", path)
         await ctx.reply(self.translations["changedrepo"])
-    
+
     @commands.command()
     async def dlrepo(self, ctx, module: str = ""):
         path = self.db.get("linto.settings", "repo_path", "itzlayz/linto-modules")
@@ -120,15 +116,13 @@ class Settings(commands.Cog):
             return await ctx.reply(self.translations["not_found"])
 
         files = [
-            file["path"] for file in response["tree"]
-            if file["path"].endswith(".py")
+            file["path"] for file in response["tree"] if file["path"].endswith(".py")
         ]
 
         if module not in files:
             return await ctx.reply(
                 self.translations["module_list"].format(
-                    path,
-                    ", ".join(map(lambda x: f"`{x[:-3]}`", files))
+                    path, ", ".join(map(lambda x: f"`{x[:-3]}`", files))
                 )
             )
 
@@ -136,14 +130,16 @@ class Settings(commands.Cog):
 
         async with aiohttp.ClientSession().get(raw_link) as source:
             source = await source.text()
-            
+
             try:
                 name = await loader.load_string(self.bot, loader.get_spec(source))
-            except (commands.errors.ExtensionAlreadyLoaded, commands.errors.ClientException):
+            except (
+                commands.errors.ExtensionAlreadyLoaded,
+                commands.errors.ClientException,
+            ):
                 return await ctx.reply(self.translations["alreadyloaded"])
 
         await ctx.reply(self.translations["loadedmod"].format(name))
-
 
     @commands.command(aliases=["latency"])
     async def ping(self, ctx):
@@ -157,5 +153,5 @@ class Settings(commands.Cog):
 
         utils._atexit(_restart)
         logging.info("Restarting")
-        
+
         sys.exit(0)

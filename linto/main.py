@@ -7,7 +7,6 @@ from discord.errors import LoginFailure
 from .localization import Localization
 from .patch import Bot as patchBot
 from .database import Database
-from .web import WebManager
 from .flet import init_flet
 from .logger import init
 from .auth import Auth
@@ -15,6 +14,8 @@ from .auth import Auth
 from . import utils, __version__
 
 logger = init()
+
+
 class Linto:
     def __init__(self):
         self.loop = None
@@ -30,11 +31,8 @@ class Linto:
         _version = ".".join(map(str, __version__))
         update = "Up to date" if not diff else "Update available"
 
-        banner = (
-            "█   █ █▄ █ ▀█▀ █▀█\n"
-            "█▄▄ █ █ ▀█  █  █▄█\n"
-        )
-        
+        banner = open("assets/banner.txt").read()
+
         print(
             f"{banner}\n"
             f"→ Git hash: {_hash[:7]}\n"
@@ -45,11 +43,7 @@ class Linto:
     async def run_bot(self, token):
         try:
             client = patchBot(command_prefix=">", self_bot=True)
-            _id = token.split('.')[0][:7]
-
-            if not self.no_web:
-                web = WebManager(client)
-                client.webmanager = web
+            _id = token.split(".")[0][:7]
 
             client.flet_app = self.flet_app
             if self.flet_app:
@@ -60,11 +54,11 @@ class Linto:
 
             localization = Localization(database)
             client.translations = client.localization = localization
-            
+
             await client.login(token)
             await client.connect()
         except LoginFailure:
-            hint = token.split('.')[0]
+            hint = token.split(".")[0]
             logger.error(f"Login failure during login ({hint}...)")
 
     async def amain(self):
@@ -89,13 +83,13 @@ class Linto:
 
     def main(self):
         warnings.filterwarnings("ignore")
-        
+
         self.linto_badge()
         asyncio.run(self.amain())
 
-def main(no_web: bool = False, flet_app: bool = False):    
+
+def main(flet_app: bool = False):
     linto = Linto()
-    linto.no_web = no_web
     linto.flet_app = flet_app
 
     linto.main()
