@@ -94,6 +94,13 @@ class Config(commands.Cog):
                 value = int(value)
             except ValueError:
                 return await ctx.reply(self.translations["invalid_value"].format("int"))
+        elif isinstance(config[key], float):
+            try:
+                value = float(value)
+            except ValueError:
+                return await ctx.reply(
+                    self.translations["invalid_value"].format("float")
+                )
 
         config[key] = value
-        await ctx.reply(self.translations["sucessful"].format(key))
+        await ctx.reply(self.translations["successful"].format(key))
