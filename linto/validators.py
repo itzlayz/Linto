@@ -33,7 +33,10 @@ class Integer(Validator):
     @staticmethod
     def validate(value: int, *, _min: int = None, _max: int = None) -> None:
         if not isinstance(value, int):
-            raise ValueError("Value must be an integer")
+            try:
+                return int(value)
+            except ValueError:
+                raise ValueError("Value must be a integer")
 
         if _min is not None and value < _min:
             raise ValueError("Value cannot be less than the minimum value")
@@ -57,7 +60,10 @@ class Float(Validator):
     @staticmethod
     def validate(value: float, *, _min: float = None, _max: float = None) -> None:
         if not isinstance(value, float):
-            raise ValueError("Value must be a float")
+            try:
+                return float(value)
+            except ValueError:
+                raise ValueError("Value must be a float")
 
         if _min is not None and value < _min:
             raise ValueError("Value cannot be less than the minimum value")
@@ -91,6 +97,6 @@ class Bool(Validator):
     def validate(value: bool):
         if not isinstance(value, bool):
             try:
-                strtobool(value)
+                return strtobool(value)
             except ValueError:
                 raise ValueError("Value must be a bool")
