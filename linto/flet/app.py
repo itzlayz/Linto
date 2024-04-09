@@ -95,10 +95,11 @@ async def init_flet(bot):
         fastapi = flet_fastapi.FastAPI()
         fastapi.mount("/", flet_fastapi.app(app))
 
-        config = Config(fastapi, "localhost", "7070", log_level=60)
+        config = Config(fastapi, "localhost", "6606", log_level=60)
         server = Server(config)
 
         await server.serve()
+        logger.info("Flet-app started on http://localhost:6606")
     except ImportError:
         logger.error("Install `web_requirements.txt` to use flet-app in web browser")
 

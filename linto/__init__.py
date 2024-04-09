@@ -7,6 +7,6 @@
 
 from .version import __version__  # noqa: F401
 
-__author__ = "Itzlayz"
+__author__ = "itzlayz"
 __copyright__ = "GPLv3"
 __credits__ = ["dolfies", "Rapptz"]
