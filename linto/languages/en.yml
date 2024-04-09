@@ -30,3 +30,7 @@ config:
   no_config: "❌ **Config not found**"
   no_key: "❌ **Key not found**"
   successful: "✔ **Successfuly changed {}'s value"
+  float: "**decimal number**"
+  string: "**string**"
+  integer: "**integer**"
+  bool: "**bool**"

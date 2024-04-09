@@ -87,19 +87,23 @@ class Config(commands.Cog):
                 value = bool(strtobool(value))
             except ValueError:
                 return await ctx.reply(
-                    self.translations["invalid_value"].format("bool")
+                    self.translations["invalid_value"].format(self.translations["bool"])
                 )
         elif isinstance(config[key], int):
             try:
                 value = int(value)
             except ValueError:
-                return await ctx.reply(self.translations["invalid_value"].format("int"))
+                return await ctx.reply(
+                    self.translations["invalid_value"].format(self.translations["bool"])
+                )
         elif isinstance(config[key], float):
             try:
                 value = float(value)
             except ValueError:
                 return await ctx.reply(
-                    self.translations["invalid_value"].format("float")
+                    self.translations["invalid_value"].format(
+                        self.translations["float"]
+                    )
                 )
 
         config[key] = value
