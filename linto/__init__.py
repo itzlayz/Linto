@@ -5,7 +5,7 @@
 # 🔒 Licensed under the GNU AGPLv3
 # https://www.gnu.org/licenses/agpl-3.0.html
 
-from .version import __version__  # noqa: F401
+__version__ = (0, 0, 1)
 
 __author__ = "itzlayz"
 __copyright__ = "GPLv3"

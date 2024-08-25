@@ -29,7 +29,7 @@ class Terminal(ft.UserControl):
         code = self.terminal_input.value
 
         try:
-            output = await utils.check_output(code)
+            output = await utils.create_process_async(code)
 
             out = await output.stdout.read()
             if not out:

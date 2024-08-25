@@ -9,7 +9,7 @@ import git
 
 from discord.ext import commands
 
-from ..utils import iniFormatting
+from ..utils import format_ini
 from .. import version, __version__
 
 
@@ -20,7 +20,7 @@ class Info(commands.Cog):
 
     @commands.command(aliases=["linto"])
     async def info(self, ctx):
-        msg = await ctx.reply(iniFormatting("Loading..."))
+        msg = await ctx.reply(format_ini("Loading..."))
         modules = len(self.bot.cogs)
         guilds = len((await self.bot.fetch_guilds(with_counts=False)))
 

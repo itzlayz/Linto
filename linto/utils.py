@@ -17,6 +17,7 @@ import logging
 
 from sys import version_info
 from contextlib import suppress
+
 from . import version
 
 try:
@@ -36,7 +37,6 @@ LETTERS = (
 if version_info < (3, 12, 0):
     from distutils.util import strtobool
 else:
-
     def strtobool(val):
         """Convert a string representation of truth to true (1) or false (0).
 
@@ -64,15 +64,13 @@ def insert_returns(body):
             insert_returns(body[-1].body)
 
 
-async def epc(code, env=None):
+async def epc(code: str, env: dict = None):
     """
     Evaluate python code
     :param code: python code
     :param env: code globals
-    :return: Output/Error no raise
+    :return: Output/Error without raise
     """
-    if env is None:
-        env = {}
     try:
         fn_name = "_eval_expr"
         cmd = "\n".join(f" {i}" for i in code.splitlines())
@@ -80,7 +78,7 @@ async def epc(code, env=None):
         parsed = ast.parse(body)
         body = parsed.body[0].body
         insert_returns(body)
-        env = {"__import__": __import__, **env}
+        env = {"__import__": __import__, **(env or {})}
         exec(compile(parsed, filename="<ast>", mode="exec"), env)
         return await eval(f"{fn_name}()", env)
     except Exception as error:
@@ -138,7 +136,7 @@ def get_ram() -> float:
         for child in process.children(recursive=True):
             mem += child.memory_info()[0] / 2.0**20
         return round(mem, 1)
-    except:  # noqa: E722
+    except Exception:
         return 0
 
 
@@ -157,7 +155,7 @@ def get_cpu() -> float:
             cpu += child.cpu_percent()
 
         return cpu
-    except:  # noqa: E722
+    except Exception:
         return 0
 
 
@@ -191,7 +189,7 @@ def git_diff():
         logging.exception("Git error, look for git in path")
 
 
-async def check_output(command: str) -> asyncio.subprocess.Process:
+async def create_process_async(command: str) -> asyncio.subprocess.Process:
     proc = await asyncio.create_subprocess_exec(
         command.strip(),
         stdin=asyncio.subprocess.STDOUT,
@@ -202,5 +200,5 @@ async def check_output(command: str) -> asyncio.subprocess.Process:
     return proc
 
 
-def iniFormatting(text: str):
+def format_ini(text: str):
     return "```ini\n[ " + text + " ]\n```"

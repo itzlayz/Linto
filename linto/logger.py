@@ -28,6 +28,8 @@ def init():
     logging.getLogger("asyncio").setLevel(logging.WARNING)
     logging.getLogger("aiohttp").setLevel(logging.WARNING)
     logging.getLogger("discord").setLevel(logging.ERROR)
+
+    logging.getLogger("websockets").setLevel(logging.FATAL)
     logging.getLogger("git").setLevel(logging.WARNING)
 
     logging.getLogger("flet_core").setLevel(logging.FATAL)
